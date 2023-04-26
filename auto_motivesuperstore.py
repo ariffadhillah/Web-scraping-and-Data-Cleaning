@@ -4,24 +4,7 @@ import csv
 
 baseurl = 'https://www.stanceplus.com'
 
-headers = {
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.48'
-}
 
-r = requests.get('https://www.stanceplus.com')
-soup = BeautifulSoup(r.content, 'lxml')
-
-categorylinks  = []
-categorylist = soup.find_all('ul', class_='col-6 col-md-3 col-lg-2')
-
-for itemcategorylist in categorylist:
-    for linkcategory in itemcategorylist.find_all('a', href=True):
-        categorylinks.append(baseurl + linkcategory['href'])
-
-productURLList = []
-data = []
-
-for linkcategory in categorylinks:
     r = requests.get(linkcategory, headers=headers)
     soup = BeautifulSoup(r.content, 'lxml')
 
