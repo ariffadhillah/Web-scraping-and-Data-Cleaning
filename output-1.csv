@@ -1,0 +1,13 @@
+PartNumber,Product Title,List of Vehicle Compatibility,Image url,Brand,OE number / cross-reference
+KPT218,,"{
+    ""NISSAN"": {
+        ""PATROL"": {
+            ""2000 - 2016 Diesel 3.0 DTi Y61,GU Closed Off-Road Vehicle 118KW"": ""Positions:,Engine Bay,Quantity Per Vehicle:,1"",
+            ""2000 - 2007 Diesel 3.0 DTi Y61,GU Closed Off-Road Vehicle 116KW"": ""Positions:,Engine Bay,Quantity Per Vehicle:,1""
+        },
+        ""NAVARA"": {
+            ""2001 - 2008 Diesel 3.0 TD 4WD D22 Ute 110KW"": ""Positions:,Engine Bay,Quantity Per Vehicle:,1"",
+            ""2001 - 2008 Diesel 3.0 TD 4WD D22 Platform/Chassis 110KW"": ""Positions:,Engine Bay,Quantity Per Vehicle:,1""
+        }
+    }
+}",,Automotivesuperstore,

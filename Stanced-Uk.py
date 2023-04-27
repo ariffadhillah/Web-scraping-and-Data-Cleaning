@@ -74,7 +74,7 @@ for linkcategory in categorylinks:
                 except:
                     ''
                 try:
-                    table_Specification = soup.find('table', {'class': 'table table-striped table-bordered font-14'})
+                    table_Specification = soup.find('div', {'class': 'compatibility-container'})
                     table_rows_Specification = table_Specification.find_all('tr')
                     dataothers_specification = {}
 
