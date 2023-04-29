@@ -72,12 +72,6 @@ for linkcategory in categorylinks:
                                 if linkCategoryProduct['href'] not in processed_urls:
                                     r = requests.get(linkCategoryProduct['href'] , headers=headers)
                                     soup = BeautifulSoup(r.content, 'lxml')
-                                    # print(linkCategoryProduct['href'])
-                                    # membuat objek BeautifulSoup
-                                    # r = requests.get(linkCategoryProduct, headers=headers)
-                                    # soup = BeautifulSoup(r.content, 'lxml')
-
-                                    
 
 
                                     part_number_element = soup.find('div', class_='product attribute partnumber')
@@ -112,46 +106,6 @@ for linkcategory in categorylinks:
                                     except:
                                         price = ''
 
-
-                                    # # tabel Compatibility 
-                                    # try:
-                                    #     am_comp = soup.find('div', {'class': 'compatibility-container'})
-                                    #     tables = am_comp.find_all('table', class_='ausct')
-                                    #     result = {}
-                                    #     # list_of_vehicle_compatibility = []
-                                    #     for table in tables:
-                                    #         brand = ''
-                                    #         model = ''
-                                    #         modelYears = ''
-                                    #         spec_name = ''
-                                    #         spec_value = ''
-                                    #         rows = table.find_all('tr')
-                                    #         for row in rows:
-                                    #             if 'class' in row.attrs and 'ausctmh' in row['class']:
-                                    #                 brand = row.find('td', {'class': 'acc-head'}).text.strip()
-                                    #             elif 'class' in row.attrs and 'ausctmh-container' in row['class']:
-                                    #                 model = row.find('td', {'class': 'acc-head'}).text.strip()
-                                    #                 if brand not in result:
-                                    #                     result[brand] = {}
-                                    #                 if model not in result[brand]:
-                                    #                     result[brand][model] = {}
-                                    #             elif 'class' in row.attrs and 'ausctlh' in row['class']:
-                                    #                 modelYears = row.find('td', {'class': 'acc-head'}).text.strip()
-                                    #                 if spec_name not in result[brand][model]:
-                                    #                     result[brand][model][modelYears] = {}
-                                    #             elif 'class' in row.attrs and 'ausctlh' in row['class']:
-                                    #                 spec_name = row.find('td', {'class': 'acc-head'}).text.strip()
-                                    #                 spec_value = ''
-                                    #             elif 'class' in row.attrs and 'ausctlh-container' in row['class']:
-                                    #                 spec_container = row.find('td')
-                                    #                 spec_value_parts = [x.strip() for x in spec_container.stripped_strings]
-                                    #                 spec_value = ','.join(spec_value_parts)
-                                    #                 result[brand][model][modelYears][spec_name] = spec_value
-                                    #     list_of_vehicle_compatibility = json.dumps(result)
-                                    # except:
-                                    #     am_comp =''
-                                    #     list_of_vehicle_compatibility = ''
-                                        
                                     #/ Compatibility  the pure vehicle info json
                                     try:
                                         am_comp = soup.find('div', {'class': 'compatibility-container'})
