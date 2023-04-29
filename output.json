@@ -1,139 +1,39 @@
-// {
-//     "FORD AUSTRALIA": {
-//       "FALCON": {
-//         "2008 - 2014 Petrol Engine 4.0 i Turbo XR6/G6 FG Platform/Chassis 270KW": {
-//           "Positions": "Engine Bay",
-//           "Quantity Per Vehicle": "1"
-//         },        
-//         "2008 - 2014 Petrol Engine 4.0 i Turbo G6/XR6 FG Sedan 270KW": {
-//           "Positions": "Engine Bay",
-//           "Quantity Per Vehicle": "1"
-//         },
-//         "2005 - 2008 Petrol Engine 4.0 i BF Platform/Chassis 190KW": {
-//           "Positions": "Engine Bay",
-//           "Quantity Per Vehicle": "1"
-//         },
-//         "2008 - 2014 Petrol Engine 4.0 i R6(Inc XR6) FG Ute 195KW": {
-//           "Positions": "Engine Bay",
-//           "Quantity Per Vehicle": "1"
-//         },
-//         "2008 - 2014 Petrol Engine 4.0 i Turbo (Inc XR6) FG Ute 270KW": {
-//           "Positions": "Engine Bay",
-//           "Quantity Per Vehicle": "1"
-//         }
-//       }
-//     }
-//   }
-
-
+[
   {
-    "FORD AUSTRALIA": {
-        "FALCON": {
-            "2008 - 2014 Petrol Engine 4.0 i Turbo XR6/G6 FG Platform/Chassis 270KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 BF Sedan 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 i (Inc XR6) BF Sedan 190KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 i XR6 Turbo BF Sedan 245KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 LPG BF Ute 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 i XR6 BF Ute 190KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 i XR6 Turbo BF Ute 245KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2010 Petrol Engine 4.0 LPG BF Wagon 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2010 Petrol Engine 4.0 i BF Wagon 190KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 i G6/XR6 FG Sedan 195KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 i Turbo G6/XR6 FG Sedan 270KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 i BF Platform/Chassis 190KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 i R6(Inc XR6) FG Ute 195KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 i Turbo (Inc XR6) FG Ute 270KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 i FG Platform/Chassis 195KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 LPG BF Platform/Chassis 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 LPG FG Platform/Chassis 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 LPG FG Ute 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 LPG FG Sedan 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 i XR6, G6E FG X Ute 195KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 i EcoLPI XR6/G6E FG X Ute 198KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 XR6 Turbo FG X Ute 270KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 i XR6 FG X Platform/Chassis 195KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 i EcoLPI XR6/G6E FG X Platform/Chassis 198KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 i XR6 Turbo FG X Sedan 270KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 i XR6, G6E FG X Sedan 195KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2014 - 2016 Petrol Engine 4.0 i EcoLPI XR6/G6E FG X Sedan 198KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2007 Petrol Engine 4.0 MPFi BF Sedan 190KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 i BF Sedan 190KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 i Turbo BF Sedan 245KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2005 - 2008 Petrol Engine 4.0 LPG BF Sedan 156KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2004 - 2006 Petrol Engine 4.0 SX,SY SUV 182KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2004 - 2011 Petrol Engine 4.0 AWD SX,SY SUV 190KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2014 Petrol Engine 4.0 F6 FG Ute 310KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            },
-            "2008 - 2009 Petrol Engine 4.0 F6X 4WD SY SUV 270KW": {
-                "Positions:":"Engine Bay",Quantity Per Vehicle:","1"
-            }
-        }
-    }
-}
+    "Positions:": "Fuel System,Engine",
+    "Quantity Per Vehicle:": "1",
+    "Product Fitment Note:": ""
+  },
+  {
+    "Positions:": "Fuel System",
+    "Quantity Per Vehicle:": "1",
+    "Product Fitment Note:": ""
+  },
+  {
+    "Quantity Per Vehicle:": "1"
+  },
+  {
+    "Positions:": "Fuel System",
+    "Quantity Per Vehicle:": "1"
+  },
+  {
+    "Positions:": "Engine,Fuel System",
+    "Quantity Per Vehicle:": "1",
+    "Product Fitment Note:": ""
+  },
+  {
+    "Positions:": "Engine,Fuel System",
+    "Quantity Per Vehicle:": "1",
+    "Product Fitment Note:": ""
+  },
+  {
+    "Positions:": "Engine,Fuel System",
+    "Quantity Per Vehicle:": "1",
+    "Product Fitment Note:": ""
+  },
+  {
+    "Positions:": "Fuel System",
+    "Quantity Per Vehicle:": "1",
+    "Product Fitment Note:": ""
+  }
+]

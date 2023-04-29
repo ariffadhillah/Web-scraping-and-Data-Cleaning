@@ -9,6 +9,7 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58'
 }
 
+
 processed_urls = set() 
 
 categorylinks = []
@@ -20,6 +21,9 @@ for itemcategorylist in categorylist:
         categorylinks.append(linkcategory['href'])
 
 data = []
+dataresultcompatibility = []
+dataresultOther_fitment = []
+
 fields = ['Category (Parent)', 'Category URL (Parent)', 'Category - Leaf (Child 1)', 'Category URL - Leaf (Child 1)', 'Product URL', 'PartNumber', 'Product Title', 'Product Subtitle', 'Product Description', 'Image URLs', 'Price', 'List of Vehicle Compatibility', 'Brand', 'OE number / cross-reference', 'Others']
 filename = 'automotivesuperstore.csv'
 for linkcategory in categorylinks:
@@ -109,44 +113,99 @@ for linkcategory in categorylinks:
                                         price = ''
 
 
-                                    # tabel Compatibility 
+                                    # # tabel Compatibility 
+                                    # try:
+                                    #     am_comp = soup.find('div', {'class': 'compatibility-container'})
+                                    #     tables = am_comp.find_all('table', class_='ausct')
+                                    #     result = {}
+                                    #     # list_of_vehicle_compatibility = []
+                                    #     for table in tables:
+                                    #         brand = ''
+                                    #         model = ''
+                                    #         modelYears = ''
+                                    #         spec_name = ''
+                                    #         spec_value = ''
+                                    #         rows = table.find_all('tr')
+                                    #         for row in rows:
+                                    #             if 'class' in row.attrs and 'ausctmh' in row['class']:
+                                    #                 brand = row.find('td', {'class': 'acc-head'}).text.strip()
+                                    #             elif 'class' in row.attrs and 'ausctmh-container' in row['class']:
+                                    #                 model = row.find('td', {'class': 'acc-head'}).text.strip()
+                                    #                 if brand not in result:
+                                    #                     result[brand] = {}
+                                    #                 if model not in result[brand]:
+                                    #                     result[brand][model] = {}
+                                    #             elif 'class' in row.attrs and 'ausctlh' in row['class']:
+                                    #                 modelYears = row.find('td', {'class': 'acc-head'}).text.strip()
+                                    #                 if spec_name not in result[brand][model]:
+                                    #                     result[brand][model][modelYears] = {}
+                                    #             elif 'class' in row.attrs and 'ausctlh' in row['class']:
+                                    #                 spec_name = row.find('td', {'class': 'acc-head'}).text.strip()
+                                    #                 spec_value = ''
+                                    #             elif 'class' in row.attrs and 'ausctlh-container' in row['class']:
+                                    #                 spec_container = row.find('td')
+                                    #                 spec_value_parts = [x.strip() for x in spec_container.stripped_strings]
+                                    #                 spec_value = ','.join(spec_value_parts)
+                                    #                 result[brand][model][modelYears][spec_name] = spec_value
+                                    #     list_of_vehicle_compatibility = json.dumps(result)
+                                    # except:
+                                    #     am_comp =''
+                                    #     list_of_vehicle_compatibility = ''
+                                        
+                                    #/ Compatibility  the pure vehicle info json
                                     try:
                                         am_comp = soup.find('div', {'class': 'compatibility-container'})
+
                                         tables = am_comp.find_all('table', class_='ausct')
-                                        result = {}
-                                        # list_of_vehicle_compatibility = []
+                                    
                                         for table in tables:
-                                            brand = ''
-                                            model = ''
-                                            modelYears = ''
-                                            spec_name = ''
-                                            spec_value = ''
-                                            rows = table.find_all('tr')
-                                            for row in rows:
-                                                if 'class' in row.attrs and 'ausctmh' in row['class']:
-                                                    brand = row.find('td', {'class': 'acc-head'}).text.strip()
-                                                elif 'class' in row.attrs and 'ausctmh-container' in row['class']:
-                                                    model = row.find('td', {'class': 'acc-head'}).text.strip()
-                                                    if brand not in result:
-                                                        result[brand] = {}
-                                                    if model not in result[brand]:
-                                                        result[brand][model] = {}
-                                                elif 'class' in row.attrs and 'ausctlh' in row['class']:
-                                                    modelYears = row.find('td', {'class': 'acc-head'}).text.strip()
-                                                    if spec_name not in result[brand][model]:
-                                                        result[brand][model][modelYears] = {}
-                                                elif 'class' in row.attrs and 'ausctlh' in row['class']:
-                                                    spec_name = row.find('td', {'class': 'acc-head'}).text.strip()
-                                                    spec_value = ''
-                                                elif 'class' in row.attrs and 'ausctlh-container' in row['class']:
-                                                    spec_container = row.find('td')
-                                                    spec_value_parts = [x.strip() for x in spec_container.stripped_strings]
-                                                    spec_value = ','.join(spec_value_parts)
-                                                    result[brand][model][modelYears][spec_name] = spec_value
-                                        list_of_vehicle_compatibility = json.dumps(result)
+                                            titlebrand = table.find('tr', class_='ausctmh')
+                                            make = titlebrand.text.strip()
+
+                                            listbrand = table.find_all('tr', class_='ausctsh')
+                                            for tr in listbrand:
+                                                model_list = tr.find_all('td', class_='acc-head')
+                                                for model in model_list:
+                                                    model_text = model.text
+                                                    listothers = tr.find_next_sibling('tr')
+                                                    others_list = listothers.find_all('td', class_='acc-head')
+                                                    for others in others_list:
+                                                        others_text = others.text.strip()
+                                                        dataresultcompatibility.append({"make": make, "model": model_text, "others": others_text})
+                                        list_of_vehicle_compatibility = json.dumps(dataresultcompatibility)
+                                        # print(json.dumps(dataresult, indent=2))
                                     except:
-                                        am_comp =''
-                                        list_of_vehicle_compatibility = ''
+                                        list_of_vehicle_compatibility = ' '
+
+                                    #/ Compatibility Other_fitment json
+                                    try:
+                                        divOther_fitment = soup.find('div', {'class': 'compatibility-container'})
+
+                                        tables_Other_fitment = divOther_fitment.find_all('table', class_='ausct')
+                                    
+                                        for table_Other_fitment in tables_Other_fitment:
+                                            
+                                            trOther_fitment = table_Other_fitment.find_all('tr', class_='ausctlh-container')
+                                            
+                                            for trOther in trOther_fitment:
+                                                fitment_data = {}
+                                                Otherfitment = trOther.find_all('td')
+                                                
+                                                for fitment in Otherfitment:
+                                                
+                                                    Otherfitment_text = fitment.get_text(strip=True)
+                                                    if ':' in Otherfitment_text:
+                                                        key, value = Otherfitment_text.split(':', 1)
+                                                        fitment_data[key] = value
+                                                    else:
+                                                        fitment_data['Positions'] = Otherfitment_text
+                                                    
+                                                dataresultOther_fitment.append(fitment_data)
+                                        
+                                        Other_fitment = json.dumps(dataresultOther_fitment)
+                                                
+                                    except:
+                                        Other_fitment = ''
 
                                     # Specifications / Others
                                     try:
@@ -174,10 +233,11 @@ for linkcategory in categorylinks:
                                         'Product Description': productDescription,
                                         'Image URLs': image_url,
                                         'Price': price,
-                                        'List of Vehicle Compatibility': list_of_vehicle_compatibility.replace('Positions:,', 'Positions":"').replace('"": ', '').replace('Bay,Quantity', 'Bay","Quantity').replace('Quantity Per Vehicle:,', 'Quantity Per Vehicle":"'),
+                                        'List of Vehicle Compatibility': list_of_vehicle_compatibility,
                                         'Brand': 'Automotivesuperstore',
                                         'OE number / cross-reference': '',
                                         'Others': others,
+                                        'Other_fitment': Other_fitment.replace('To ~','","To":"').replace('Quantity Per Vehicle:','","Quantity Per Vehicle":"').replace('Product Fitment Note:','","Product Fitment Note":"').replace('": "','":"').replace('Catalog Type:Roll Control','","Catalog Type:Roll Control').replace('Fitment Retail:','","Fitment Retail":"').replace('PAFootNote1:','","PAFootNote1":"').replace('Catalog Type:', 'Catalog Type":"').replace('Catalog Type','","Catalog Type').replace('"",','').replace('PAFootNote2:','","PAFootNote2":"').replace('PAFootNote3:','","PAFootNote3":"').replace('Outcome:','","Outcome":"'),
                                     }
 
                                     data.append(Automotivesuperstore)
