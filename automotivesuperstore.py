@@ -22,6 +22,7 @@ for itemcategorylist in categorylist:
 
 data = []
 
+
 fields = ['Category (Parent)', 'Category URL (Parent)', 'Category - Leaf (Child 1)', 'Category URL - Leaf (Child 1)', 'Product URL', 'PartNumber', 'Product Title', 'Product Subtitle', 'Product Description', 'Image URLs', 'Price', 'List of Vehicle Compatibility', 'Brand', 'OE number / cross-reference', 'Others', 'Other_fitment']
 filename = 'automotivesuperstore.csv'
 for linkcategory in categorylinks:
@@ -70,7 +71,10 @@ for linkcategory in categorylinks:
                                 if linkCategoryProduct['href'] not in processed_urls:
                                     r = requests.get(linkCategoryProduct['href'] , headers=headers)
                                     soup = BeautifulSoup(r.content, 'lxml')
+
                                     
+                                    dataresultcompatibility = []
+                                    dataresultOther_fitment = []
 
                                     part_number_element = soup.find('div', class_='product attribute partnumber')
                                     if part_number_element:
@@ -104,9 +108,7 @@ for linkcategory in categorylinks:
                                     except:
                                         price = ''
 
-
                                     #/ Compatibility  the pure vehicle info json
-                                    dataresultcompatibility = []
                                     try:
                                         am_comp = soup.find('div', {'class': 'compatibility-container'})
 
@@ -132,8 +134,6 @@ for linkcategory in categorylinks:
                                         list_of_vehicle_compatibility = ' '
 
                                     #/ Compatibility Other_fitment json
-
-                                    dataresultOther_fitment = []
                                     try:
                                         divOther_fitment = soup.find('div', {'class': 'compatibility-container'})
 
@@ -175,8 +175,19 @@ for linkcategory in categorylinks:
                                         others = json.dumps(specs)
                                     except:
                                         others = ''
+                                    
+                                    # brand
+                                    try:
+                                        product_info_main = soup.find('div', {'class': 'product-info-main'})
+                                        altimage = product_info_main.find('img')
+                                        brand = altimage.get('alt')
+                                        
+                                    except:
+                                        brand = ''
+
                                     Category_Leaf_Child = []
                                     Category_Leaf_Child.append('Home  ' + linkcategory.split('/')[-1].replace('-', ' ').title() + ' ' +  lintpro + ' ' + url_Category_URL_Leaf_Child1.split('/')[-1].replace('-', ' ').title())
+                                    
                                     Automotivesuperstore = {
                                         'Category (Parent)': 'Home ' + linkcategory.split('/')[-1].replace('-', ' ').title(),
                                         'Category URL (Parent)': linkcategory,
@@ -190,14 +201,14 @@ for linkcategory in categorylinks:
                                         'Image URLs': image_url,
                                         'Price': price,
                                         'List of Vehicle Compatibility': list_of_vehicle_compatibility,
-                                        'Brand': 'Automotivesuperstore',
+                                        'Brand': brand,
                                         'OE number / cross-reference': '',
                                         'Others': others,
                                         'Other_fitment': Other_fitment.replace('To ~','","To":"').replace('Quantity Per Vehicle:','","Quantity Per Vehicle":"').replace('Product Fitment Note:','","Product Fitment Note":"').replace('": "','":"').replace('Catalog Type:Roll Control','","Catalog Type:Roll Control').replace('Fitment Retail:','","Fitment Retail":"').replace('PAFootNote1:','","PAFootNote1":"').replace('Catalog Type:', 'Catalog Type":"').replace('Catalog Type','","Catalog Type').replace('"",','').replace('PAFootNote2:','","PAFootNote2":"').replace('PAFootNote3:','","PAFootNote3":"').replace('Outcome:','","Outcome":"'),
                                     }
 
                                     data.append(Automotivesuperstore)
-                                    print('Saving', Automotivesuperstore['PartNumber'],Automotivesuperstore['Category - Leaf (Child 1)'], Automotivesuperstore['Price'], Automotivesuperstore['Product URL'])
+                                    print('Saving', Automotivesuperstore['Brand'], Automotivesuperstore['PartNumber'],Automotivesuperstore['Category - Leaf (Child 1)'], Automotivesuperstore['Price'], Automotivesuperstore['Product URL'], Automotivesuperstore['Others'])
                                     with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                                         writer = csv.DictWriter(csvfile, fieldnames=fields)
                                         writer.writeheader()

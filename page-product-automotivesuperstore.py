@@ -7,7 +7,7 @@ data = []
 dataresult = []
 dataresultOther_fitment = []
 # membuat permintaan ke URL
-url = 'https://automotivesuperstore.com.au/autoss-csk-auda3-418071k#compatibility'
+url = 'https://automotivesuperstore.com.au/aeroflow-af463-0032b'
 r = requests.get(url)
 
 # membuat objek BeautifulSoup
@@ -123,6 +123,15 @@ try:
 except:
     others = ''
 
+
+try:
+    product_info_main = soup.find('div', {'class': 'product-info-main'})
+    altimage = product_info_main.find('img')
+    brand = altimage.get('alt')
+    
+except:
+    brand = ''
+
 Automotivesuperstore = {
     'Category (Parent)': '',
     'Category URL (Parent)': '',
@@ -136,14 +145,14 @@ Automotivesuperstore = {
     'Image URLs': image_url,
     'Price': price,
     'List of Vehicle Compatibility': list_of_vehicle_compatibility,
-    'Brand': 'Automotivesuperstore',
+    'Brand': brand,
     'OE number / cross-reference': '',
     'Others': others,
     'Other_fitment': Other_fitment.replace('To ~','","To":"').replace('Quantity Per Vehicle:','","Quantity Per Vehicle":"').replace('Product Fitment Note:','","Product Fitment Note":"').replace('": "','":"').replace('Catalog Type:Roll Control','","Catalog Type:Roll Control').replace('Fitment Retail:','","Fitment Retail":"').replace('PAFootNote1:','","PAFootNote1":"').replace('Catalog Type:', 'Catalog Type":"').replace('Catalog Type','","Catalog Type').replace('"",','').replace('PAFootNote2:','","PAFootNote2":"').replace('PAFootNote3:','","PAFootNote3":"').replace('Outcome:','","Outcome":"'),
 }
 
 data.append(Automotivesuperstore)
-print('Saving', Automotivesuperstore['Other_fitment'])
+print('Saving', Automotivesuperstore['Brand'])
 
 with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fields)
