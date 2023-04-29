@@ -208,7 +208,7 @@ for linkcategory in categorylinks:
                                     }
 
                                     data.append(Automotivesuperstore)
-                                    print('Saving', Automotivesuperstore['Brand'], Automotivesuperstore['PartNumber'],Automotivesuperstore['Category - Leaf (Child 1)'], Automotivesuperstore['Price'], Automotivesuperstore['Product URL'], Automotivesuperstore['Others'])
+                                    print('Saving', Automotivesuperstore['PartNumber'],Automotivesuperstore['Category - Leaf (Child 1)'], Automotivesuperstore['Price'], Automotivesuperstore['Brand'], Automotivesuperstore['Product URL'], Automotivesuperstore['Others'])
                                     with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                                         writer = csv.DictWriter(csvfile, fieldnames=fields)
                                         writer.writeheader()
