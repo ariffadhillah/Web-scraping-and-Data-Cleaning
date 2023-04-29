@@ -223,7 +223,7 @@ import json
 dataresultOther_fitment = []
 
 # membuat permintaan ke URL
-url = 'https://automotivesuperstore.com.au/superpro-spf4660k'
+url = 'https://automotivesuperstore.com.au/autoss-csk-auda3-418071k#compatibility'
 r = requests.get(url)
 
 soup = BeautifulSoup(r.content, 'html.parser')

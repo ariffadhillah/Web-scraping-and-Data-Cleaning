@@ -21,8 +21,6 @@ for itemcategorylist in categorylist:
         categorylinks.append(linkcategory['href'])
 
 data = []
-dataresultcompatibility = []
-dataresultOther_fitment = []
 
 fields = ['Category (Parent)', 'Category URL (Parent)', 'Category - Leaf (Child 1)', 'Category URL - Leaf (Child 1)', 'Product URL', 'PartNumber', 'Product Title', 'Product Subtitle', 'Product Description', 'Image URLs', 'Price', 'List of Vehicle Compatibility', 'Brand', 'OE number / cross-reference', 'Others', 'Other_fitment']
 filename = 'automotivesuperstore.csv'
@@ -72,7 +70,7 @@ for linkcategory in categorylinks:
                                 if linkCategoryProduct['href'] not in processed_urls:
                                     r = requests.get(linkCategoryProduct['href'] , headers=headers)
                                     soup = BeautifulSoup(r.content, 'lxml')
-
+                                    
 
                                     part_number_element = soup.find('div', class_='product attribute partnumber')
                                     if part_number_element:
@@ -106,7 +104,9 @@ for linkcategory in categorylinks:
                                     except:
                                         price = ''
 
+
                                     #/ Compatibility  the pure vehicle info json
+                                    dataresultcompatibility = []
                                     try:
                                         am_comp = soup.find('div', {'class': 'compatibility-container'})
 
@@ -132,6 +132,8 @@ for linkcategory in categorylinks:
                                         list_of_vehicle_compatibility = ' '
 
                                     #/ Compatibility Other_fitment json
+
+                                    dataresultOther_fitment = []
                                     try:
                                         divOther_fitment = soup.find('div', {'class': 'compatibility-container'})
 

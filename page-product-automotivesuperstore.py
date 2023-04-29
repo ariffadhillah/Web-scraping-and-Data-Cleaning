@@ -7,7 +7,7 @@ data = []
 dataresult = []
 dataresultOther_fitment = []
 # membuat permintaan ke URL
-url = 'https://automotivesuperstore.com.au/superpro-trc219lk'
+url = 'https://automotivesuperstore.com.au/autoss-csk-auda3-418071k#compatibility'
 r = requests.get(url)
 
 # membuat objek BeautifulSoup
