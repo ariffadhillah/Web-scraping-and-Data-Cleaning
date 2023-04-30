@@ -180,7 +180,7 @@ for linkcategory in categorylinks:
                                     try:
                                         product_info_main = soup.find('div', {'class': 'product-info-main'})
                                         altimage = product_info_main.find('img')
-                                        brand = altimage.get('alt')
+                                        brand = altimage.get('title')
                                         
                                     except:
                                         brand = ''
