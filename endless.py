@@ -1,22 +1,24 @@
 import requests
 from bs4 import BeautifulSoup
-from googletrans import Translator
+import csv
+import json
+import time
 
-# Mendapatkan halaman HTML dari URL
-url = 'https://www.endless-sport.co.jp/products/products_index.html'
-response = requests.get(url)
-html = response.text
+baseurl = 'https://www.endless-sport.co.jp/products/products_index.html'
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58'
+}
 
-# Parsing HTML dengan BeautifulSoup
-soup = BeautifulSoup(html, 'html.parser')
-element = soup.find('div', class_='maintitle_pc_box2')
 
-# Mendapatkan teks dalam bahasa Jepang
-text_jp = element.text
+processed_urls = set() 
 
-# Menerjemahkan teks dari bahasa Jepang ke bahasa Inggris
-translator = Translator()
-text_en = translator.translate(text_jp, dest='en').text
+categoryProduct = []
+r = requests.get(baseurl, headers=headers)
+soup = BeautifulSoup(r.content, 'lxml')
+productList = soup.find_all('div', {'class': 'contents_box_triple'})
 
-# Mencetak hasil terjemahan
-print(text_en)
+productLinks = []
+
+for itemCategory in productList:
+    for linkItemCategory in itemCategory.find_all('a', text='製品インデックス'):
+        print(linkItemCategory['href'])
