@@ -12,19 +12,15 @@ headers = {
 
 processed_urls = set() 
 
-categorylinks = []
-r = requests.get(baseurl, headers=headers)
-soup = BeautifulSoup(r.content, 'lxml')
-categorylist = soup.find_all('div', {'data-content-type': 'button-item', 'data-appearance': 'default', 'data-element': 'main'})
-for itemcategorylist in categorylist:
-    for linkcategory in itemcategorylist.find_all('a', class_='pagebuilder-button-link', href=True):
-        categorylinks.append(linkcategory['href'])
-
 data = []
 
 
 fields = ['Category (Parent)', 'Category URL (Parent)', 'Category - Leaf (Child 1)', 'Category URL - Leaf (Child 1)', 'Product URL', 'PartNumber', 'Product Title', 'Product Subtitle', 'Product Description', 'Image URLs', 'Price', 'List of Vehicle Compatibility', 'Brand', 'OE number / cross-reference', 'Others', 'Other_fitment']
-filename = 'automotivesuperstore.csv'
+filename = 'automotivesuperstore_category_Service.csv'
+
+category_url = baseurl + '/service'
+categorylinks = [category_url]
+
 for linkcategory in categorylinks:
     r = requests.get(linkcategory, headers=headers)
     print(linkcategory)
