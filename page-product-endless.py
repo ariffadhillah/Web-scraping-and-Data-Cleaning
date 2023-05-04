@@ -131,7 +131,7 @@ fields = ['Parttype (category)', 'Parttype url (category)', 'Make', 'Make URL', 
 filename = 'contoh.csv'
 
 data = []
-
+# menhapus <tr> dengan ketinggian tertentu seperti contoh ini tinggi 'height: 149px'
 iframes = soup.find_all('iframe')
 for iframe in iframes:
     src = iframe['src']
@@ -141,9 +141,9 @@ for iframe in iframes:
     for table in tables:
         rows = table.find_all('tr')[5:]
         for row in rows:
-            # Menghapus kolom yang berisi teks "年式"
-            row.find('td', text="年式").extract()
-            
+            # tambahkan kondisi untuk memeriksa apakah elemen tr memiliki atribut style yang mengatur tinggi
+            if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                continue  # lewati jika ada atribut style dengan ketinggian yang ditentukan
             year = row.find_all('td')
             engine = row.find_all('td')
             type_ = row.find_all('td')
