@@ -1,216 +1,93 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-import json
 import time
 
-baseurl = 'https://automotivesuperstore.com.au'
+baseurl = 'https://www.endless-sport.co.jp'
 headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58'
 }
 
+processed_urls = set()
+categoryProduct = []
 
-processed_urls = set() 
+pageBrakepads = baseurl + '/products/brake_pad/car_list.html'
 
-data = []
+r = requests.get(pageBrakepads, headers=headers)
+soup = BeautifulSoup(r.content, 'lxml')
 
 
-fields = ['Category (Parent)', 'Category URL (Parent)', 'Category - Leaf (Child 1)', 'Category URL - Leaf (Child 1)', 'Product URL', 'PartNumber', 'Product Title', 'Product Subtitle', 'Product Description', 'Image URLs', 'Price', 'List of Vehicle Compatibility', 'Brand', 'OE number / cross-reference', 'Others', 'Other_fitment']
-filename = 'automotivesuperstore.csv'
+listCarsName = []
+brakepad_search_whole = soup.find('div', id='brakepad_search_whole')
+carList = brakepad_search_whole.find('div', id='right_menu_box')
+for linkcars in carList.find_all('a', href=True):
+    listCarsName.append(linkcars['href'])
 
-category_url = baseurl + '/service'
-categorylinks = [category_url]
+fields = ['Parttype (category)', 'Parttype url (category)', 'Make', 'Make URL', 'Model', 'Year', 'Engine cc', 'Type', 'PartNumber']
+filename = 'endless.csv'
 
-for linkcategory in categorylinks:
-    r = requests.get(linkcategory, headers=headers)
-    print(linkcategory)
-    soup = BeautifulSoup(r.content, 'lxml')
-    textlint = soup.find('h1', class_='page-title').text
-    print(textlint)
-    try:
-        productItem = soup.find_all('ul', class_='subcategories service-catlist')
-    except:
-        continue
-    for item in productItem:
-        productList = []
-        for href in item.find_all('a', class_='category-image', href=True):
+productList = []
+for carName in listCarsName:
+    urlcar = requests.get(carName, headers=headers)
+    soup = BeautifulSoup(urlcar.content, 'lxml')
+    carNameIcons = soup.find_all('div', id='ewig_pad_whole')
+    for itemCarName in carNameIcons:
+        for href in itemCarName.find_all('a',  href=True):
             url = href['href']
             if url not in processed_urls:
-                productList.append(url)
+                productList.append(pageBrakepads.replace('/car_list.html', '/') + url)
                 processed_urls.add(url)
+            time.sleep(.5)
+        for pageCarlist in productList:            
+            r = requests.get(pageCarlist, headers=headers)
+            soup = BeautifulSoup(r.content, 'lxml')            
+            data = []
+            iframes = soup.find_all('iframe')
+            for iframe in iframes:
+                src = iframe['src']
+                iframe_content = requests.get(src).content
+                iframe_soup = BeautifulSoup(iframe_content, 'html.parser')
+                tables = iframe_soup.find_all('table')
+                for table in tables:
+                    rows = table.find_all('tr')[5:]
+                    for row in rows:
+                        if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                            continue  
+                        year = row.find_all('td')
+                        engine = row.find_all('td')
+                        type_ = row.find_all('td')
+                        PartNumberFront = row.find_all('td')
+                        PartNumberRear = row.find_all('td')[13:]
+                        if PartNumberFront and PartNumberRear:
+                            PartNumber = PartNumberFront[4].text.strip() +' '+ PartNumberRear[0].text.strip()
+                        else:
+                            PartNumber = ""
+                        if year and engine and type_ and PartNumber:
+                            endless = {
+                                'Parttype (category)': '',
+                                'Parttype url (category)': '',
+                                'Make': url.split('/')[-2].replace('-', ' ').title(),
+                                'Make URL': '',
+                                'Model': '',
+                                'Year': year[1].text.strip().replace('～', ' ～ '),
+                                'Engine cc': engine[2].text.strip().replace('～', ' ～ '),
+                                'Type': type_[3].text.strip(),
+                                'PartNumber': PartNumber.replace(' ', '\n'),
+                            }
+                            data.append(endless)
+                            print('Saving',endless['Make'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])
 
-        for linkproduct in productList:
-            r = requests.get(linkproduct, headers=headers)
-            print(linkproduct)
-            soup = BeautifulSoup(r.content, 'lxml')
-            lintpro = soup.find('h1', class_='page-title').text
-            print(lintpro)
-            try:
-                itemproductlinks = soup.find_all('ul', class_='subcategories service-catlist')
-            except:
-                continue
-            for itemlinks in itemproductlinks:
-                for hrefitem in itemlinks.find_all('a', class_='category-image', href=True):
-                    url_Category_URL_Leaf_Child1 = hrefitem['href']
-                    if url_Category_URL_Leaf_Child1 not in processed_urls:
-                        processed_urls.add(url_Category_URL_Leaf_Child1)
-                        print(url_Category_URL_Leaf_Child1)
-                        page_num = 1
-                        while True:
-                            page_url = url_Category_URL_Leaf_Child1 + f'?p={page_num}'
-                            r = requests.get(page_url, headers=headers)
-                            soup = BeautifulSoup(r.content, 'lxml')
-                            linkCategoryProducts = soup.find_all('a', class_='product photo product-item-photo', href=True)
-                            if not linkCategoryProducts:
-                                break
-                            for linkCategoryProduct in linkCategoryProducts:
-                                if linkCategoryProduct['href'] not in processed_urls:
-                                    r = requests.get(linkCategoryProduct['href'] , headers=headers)
-                                    soup = BeautifulSoup(r.content, 'lxml')
+                            with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                                writer = csv.DictWriter(csvfile, fieldnames=fields)
+                                writer.writeheader()
+                                for item in data:
+                                    writer.writerow(item)       
 
-                                    
-                                    dataresultcompatibility = []
-                                    dataresultOther_fitment = []
+# page 
+importedCar = brakepad_search_whole.find_all('div', id='right_menu_box')[1]
+listImportedCar = []
+for linkcarsimported in importedCar.find_all('a', href=True):
+    listImportedCar.append(linkcarsimported['href'])
+# print(len(listImportedCar))
+print(listImportedCar)
 
-                                    part_number_element = soup.find('div', class_='product attribute partnumber')
-                                    if part_number_element:
-                                        try:
-                                            PartNumber = part_number_element.text.replace('Part No.', '').strip()    
-                                        except:
-                                            PartNumber = ''
-                                    else:
-                                        print(' ')
-
-                                    try:
-                                        productTitle = soup.find('h1', class_='page-title').text.strip()    
-                                    except:
-                                        productTitle = ''
-
-                                    try:
-                                        productDescription = soup.find('div', class_='product attribute description').text.strip()    
-                                    except:
-                                        productDescription = ''
-
-                                    # gallery-placeholder
-                                    try:
-                                        imgproductmedia = soup.find('div', {'class': 'product media'})
-                                        image = imgproductmedia.find('img', {'class': 'gallery-placeholder__image'})
-                                        image_url = image['src']
-                                    except:
-                                        image_url = ''
-                                    try:
-                                        price_wrapper = soup.find('span', {'data-price-type': 'finalPrice'})
-                                        price = price_wrapper.find('span', {'class': 'price'}).text
-                                    except:
-                                        price = ''
-
-                                    #/ Compatibility  the pure vehicle info json
-                                    try:
-                                        am_comp = soup.find('div', {'class': 'compatibility-container'})
-
-                                        tables = am_comp.find_all('table', class_='ausct')
-                                    
-                                        for table in tables:
-                                            titlebrand = table.find('tr', class_='ausctmh')
-                                            make = titlebrand.text.strip()
-
-                                            listbrand = table.find_all('tr', class_='ausctsh')
-                                            for tr in listbrand:
-                                                model_list = tr.find_all('td', class_='acc-head')
-                                                for model in model_list:
-                                                    model_text = model.text
-                                                    listothers = tr.find_next_sibling('tr')
-                                                    others_list = listothers.find_all('td', class_='acc-head')
-                                                    for others in others_list:
-                                                        others_text = others.text.strip()
-                                                        dataresultcompatibility.append({"make": make, "model": model_text, "others": others_text})
-                                        list_of_vehicle_compatibility = json.dumps(dataresultcompatibility)
-                                        # print(json.dumps(dataresult, indent=2))
-                                    except:
-                                        list_of_vehicle_compatibility = ' '
-
-                                    #/ Compatibility Other_fitment json
-                                    try:
-                                        divOther_fitment = soup.find('div', {'class': 'compatibility-container'})
-
-                                        tables_Other_fitment = divOther_fitment.find_all('table', class_='ausct')
-                                    
-                                        for table_Other_fitment in tables_Other_fitment:
-                                            
-                                            trOther_fitment = table_Other_fitment.find_all('tr', class_='ausctlh-container')
-                                            
-                                            for trOther in trOther_fitment:
-                                                fitment_data = {}
-                                                Otherfitment = trOther.find_all('td')
-                                                
-                                                for fitment in Otherfitment:
-                                                
-                                                    Otherfitment_text = fitment.get_text(strip=True)
-                                                    if ':' in Otherfitment_text:
-                                                        key, value = Otherfitment_text.split(':', 1)
-                                                        fitment_data[key] = value
-                                                    else:
-                                                        fitment_data['Positions'] = Otherfitment_text
-                                                    
-                                                dataresultOther_fitment.append(fitment_data)
-                                        
-                                        Other_fitment = json.dumps(dataresultOther_fitment)
-                                                
-                                    except:
-                                        Other_fitment = ''
-
-                                    # Specifications / Others
-                                    try:
-                                        spec_group = soup.find('div', {'class': 'spec-group'})
-                                        rows = spec_group.find_all('tr')
-                                        specs = {}
-                                        for row in rows:
-                                            key = row.find('th').text.strip().replace(':', '')
-                                            value = row.find('td').text.strip()
-                                            specs[key] = value
-                                        others = json.dumps(specs)
-                                    except:
-                                        others = ''
-                                    
-                                    # brand
-                                    try:
-                                        product_info_main = soup.find('div', {'class': 'product-info-main'})
-                                        altimage = product_info_main.find('img')
-                                        brand = altimage.get('title')
-                                        
-                                    except:
-                                        brand = ''
-
-                                    Category_Leaf_Child = []
-                                    Category_Leaf_Child.append('Home  ' + linkcategory.split('/')[-1].replace('-', ' ').title() + ' ' +  lintpro + ' ' + url_Category_URL_Leaf_Child1.split('/')[-1].replace('-', ' ').title())
-                                    
-                                    Automotivesuperstore = {
-                                        'Category (Parent)': 'Home ' + linkcategory.split('/')[-1].replace('-', ' ').title(),
-                                        'Category URL (Parent)': linkcategory,
-                                        'Category - Leaf (Child 1)': ' '.join(Category_Leaf_Child).replace('\n', ' ').replace("['", "").replace("']",""),
-                                        'Category URL - Leaf (Child 1)': url_Category_URL_Leaf_Child1,
-                                        'Product URL': linkCategoryProduct['href'],
-                                        'PartNumber': PartNumber,
-                                        'Product Title': productTitle, 
-                                        'Product Subtitle': '',
-                                        'Product Description': productDescription,
-                                        'Image URLs': image_url,
-                                        'Price': price,
-                                        'List of Vehicle Compatibility': list_of_vehicle_compatibility,
-                                        'Brand': brand,
-                                        'OE number / cross-reference': '',
-                                        'Others': others,
-                                        'Other_fitment': Other_fitment.replace('To ~','","To":"').replace('Quantity Per Vehicle:','","Quantity Per Vehicle":"').replace('Product Fitment Note:','","Product Fitment Note":"').replace('": "','":"').replace('Catalog Type:Roll Control','","Catalog Type:Roll Control').replace('Fitment Retail:','","Fitment Retail":"').replace('PAFootNote1:','","PAFootNote1":"').replace('Catalog Type:', 'Catalog Type":"').replace('Catalog Type','","Catalog Type').replace('"",','').replace('PAFootNote2:','","PAFootNote2":"').replace('PAFootNote3:','","PAFootNote3":"').replace('Outcome:','","Outcome":"'),
-                                    }
-
-                                    data.append(Automotivesuperstore)
-                                    print('Saving', Automotivesuperstore['PartNumber'],Automotivesuperstore['Category - Leaf (Child 1)'], Automotivesuperstore['Price'], Automotivesuperstore['Brand'], Automotivesuperstore['Product URL'], Automotivesuperstore['Others'])
-                                    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-                                        writer = csv.DictWriter(csvfile, fieldnames=fields)
-                                        writer.writeheader()
-                                        for item in data:
-                                            writer.writerow(item)
-
-                            # print('Data is successfully saved in the file', filename)
-                            page_num += 1
-                            time.sleep(1) # time sleep
