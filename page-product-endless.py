@@ -28,7 +28,8 @@ for iframe in iframes:
     tables = iframe_soup.find_all('table')
     for tablemodel in tables:
         rowsmodel = tablemodel.find_all('tr')[1]
-        print(rowsmodel.find_all('td')[1])
+        model =  rowsmodel.find_all('td')
+
     for table in tables:
         rows = table.find_all('tr')[5:]
         for row in rows:
@@ -50,15 +51,15 @@ for iframe in iframes:
                     'Parttype (category)': parttype_category,
                     'Parttype url (category)': parttype_category_url,
                     'Make': url.split('/')[-2].replace('-', ' ').title(),
-                    'Make URL': '',
-                    'Model': '',
+                    'Make URL': url,
+                    'Model': model[1].text.strip(),
                     'Year': year[1].text.strip().replace('～', ' ～ '),
                     'Engine cc': engine[2].text.strip().replace('～', ' ～ '),
                     'Type': type_[3].text.strip(),
                     'PartNumber': PartNumber.replace(' ', '\n'),
                 }
                 data.append(endless)
-                print('Saving',endless['Make'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])
+                print('Saving',endless['Parttype (category)'],endless['Parttype url (category)'],endless['Make'],endless['Make URL'],endless['Model'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])
 
                 with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=fields)
