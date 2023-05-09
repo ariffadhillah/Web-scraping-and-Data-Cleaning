@@ -76,8 +76,8 @@ for carName in listCarsName:
                         rows = table.find_all('tr')[5:]
                         for row in rows:
                             # tambahkan kondisi untuk memeriksa apakah elemen tr memiliki atribut style yang mengatur tinggi
-                            if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
-                                continue  # lewati jika ada atribut style dengan ketinggian yang ditentukan
+                            # if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                            #     continue  # lewati jika ada atribut style dengan ketinggian yang ditentukan
                             year = row.find_all('td')
                             engine = row.find_all('td')
                             type_ = row.find_all('td')
@@ -188,4 +188,40 @@ for pageCarListImport in listImportedCar:
                             writer.writerow(item)
 
 
+
+
+# Page Brake pads
+brake_caliper = baseurl + '/products/brake_caliper/index.html'
+
+
+r = requests.get(brake_caliper, headers=headers)
+soup = BeautifulSoup(r.content, 'lxml')
+
+listCarsName = []
+listImportedCar = []
+data = []
+list_Brake_caliper = []
+
+links_index2 = []
+linkModel = []
+leftmenuindex1 = soup.find('div', id='leftmenu_index2')
+for urlCarsList in leftmenuindex1.find_all('a', href=True):
+    links_index2.append(urlCarsList['href'])
+
+for crasListBrakeCaliper in links_index2:
+    r = requests.get(crasListBrakeCaliper, headers=headers)
+    soup = BeautifulSoup(r.content, 'lxml')
+    
+    listCarsBrakeCaliper = soup.find_all('div', id='maker_icons')
+    
+    for listMake in listCarsBrakeCaliper:
+        for linkMake in listMake.find_all('a', href=True):
+            linkModel.append(linkMake['href'])
+
+for linkMake in linkModel:
+    r = requests.get(linkMake, headers=headers)
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    test = soup.find('div', class_='maintitle_pc_box2')
+    print(test.text.strip())
 
