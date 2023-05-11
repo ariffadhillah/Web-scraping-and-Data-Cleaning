@@ -284,8 +284,7 @@ soup = BeautifulSoup(r.content, 'lxml')
 
 # tekigou_icon
 
-listbrakerotor = soup.find_all('div', 'tekigou_icon')[1:]
-
+listbrakerotor = soup.find_all('div', class_='tekigou_icon')[1:]
 
 listbrakerotorlinks = []
 

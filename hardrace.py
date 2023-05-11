@@ -10,7 +10,6 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.35'
 }
 
-
 r = requests.get(baseurl, headers=headers)
 soup = BeautifulSoup(r.content, 'lxml')
 
@@ -39,23 +38,18 @@ for listCarsCategory in produclinks:
         titleCarsCategory = ''
 
     listItemCars = soup.find_all('div', class_='col-12 col-md-4 mb-4 px-2')
-
-    # print(listItemCars)
-    
     productItemLinks = []
     for product_item in listItemCars:
         for link_product_item in product_item.find_all('a', href=True):
             urlproduct = link_product_item['href']
             if urlproduct not in processed_urls:
                 productItemLinks.append(urlproduct)
-                processed_urls.add(urlproduct)
-    
-    print(len(productItemLinks))
-
+                processed_urls.add(urlproduct)    
             
     for itemCars in productItemLinks:
         r = requests.get(itemCars, headers=headers)
         soup = BeautifulSoup(r.content, 'lxml')
+       
 
         try:
             titleCarsCategory = soup.find('h1', class_='page-title').text.strip()      
@@ -64,53 +58,73 @@ for listCarsCategory in produclinks:
             titleCarsCategory = ''
         
         
+        itemlinkproduct = []
+        linkproductpage = soup.find_all('li', class_='item product product-item')
+
+        
+        for listcarsproduct in linkproductpage:
+            for productItem_card in listcarsproduct.find_all('a', href=True):
+                href_product =  productItem_card['href']
+                if href_product not in processed_urls:
+                    itemlinkproduct.append(href_product)
+                    processed_urls.add(href_product)
+
+                # print(href_product)
+        #         if href_product not in processed_urls:
+        #             produclinks.append(href_product)
+        #             itemlinkproduct.add(href_product)
+        print(itemlinkproduct)
+        print('------------------ end page item cars')
+            
+        
 
 
-        try:
-            listcars_itemcategory = soup.find_all('div', class_='col-12 col-md-4 mb-4 px-2')
-            for itemsublink in listcars_itemcategory:
-                urlItemproduct = []
-                for sunitemcategory in itemsublink.find_all('a', href=True):
-                    herfsunitem = sunitemcategory['href']
-                    if herfsunitem not in processed_urls:
-                        urlItemproduct.append(herfsunitem)
-                        processed_urls.add(herfsunitem)
+
+        # try:
+        #     listcars_itemcategory = soup.find_all('div', class_='col-12 col-md-4 mb-4 px-2')
+        #     for itemsublink in listcars_itemcategory:
+        #         urlItemproduct = []
+        #         for sunitemcategory in itemsublink.find_all('a', href=True):
+        #             herfsunitem = sunitemcategory['href']
+        #             if herfsunitem not in processed_urls:
+        #                 urlItemproduct.append(herfsunitem)
+        #                 processed_urls.add(herfsunitem)
              
-                # print(urlItemproduct)
+        #         # print(urlItemproduct)
 
-                for linkitemproduct in urlItemproduct:
-                    # linkitemproduct
-                    r = requests.get(itemCars, headers=headers)
-                    soup = BeautifulSoup(r.content, 'lxml')
+        #         for linkitemproduct in urlItemproduct:
+        #             # linkitemproduct
+        #             r = requests.get(itemCars, headers=headers)
+        #             soup = BeautifulSoup(r.content, 'lxml')
 
-                    try:
-                        pageItemName = soup.find('h1', class_='page-title').text.strip()
-                    except:
-                        pageItemName = ''
+        #             try:
+        #                 pageItemName = soup.find('h1', class_='page-title').text.strip()
+        #             except:
+        #                 pageItemName = ''
 
 
-                    pagelink = soup.find_all('li', class_='item product product-item' )
-                    # print(pagelink)
+        #             pagelink = soup.find_all('li', class_='item product product-item' )
+        #             # print(pagelink)
 
-                    # for linkproduct in pagelink:
-                    #     pageProductLink = []
-                    #     for hrefpage in linkproduct.find_all('a', href=True):
-                    #         print(hrefpage['href'])
-                        #     urlitem = hrefpage['href']
-                        #     if urlitem not in processed_urls:
-                        #         pageProductLink.append(urlitem)
-                        #         processed_urls.add(urlitem)
-                        # print('                                     ')
-                        # print('-------------------------------------')
-                        # print('                                     ')
-                        # print(len(pageProductLink))
-                        # print('-------------------------------------')
-                        # print('                                     ')
-                        # print(pageProductLink)
-                        # print('                                     ')
-                        # print('-------------------------------------')
-                        # print('                                     ')
-                        # print('                                     ')
+        #             for linkproduct in pagelink:
+        #                 pageProductLink = []
+        #                 for hrefpage in linkproduct.find_all('a', href=True):
+        #                     print(hrefpage['href'])
+        #                     urlitem = hrefpage['href']
+        #                     if urlitem not in processed_urls:
+        #                         pageProductLink.append(urlitem)
+        #                         processed_urls.add(urlitem)
+        #                 print('                                     ')
+        #                 print('-------------------------------------')
+        #                 print('                                     ')
+        #                 print(len(pageProductLink))
+        #                 print('-------------------------------------')
+        #                 print('                                     ')
+        #                 print(pageProductLink)
+        #                 print('                                     ')
+        #                 print('-------------------------------------')
+        #                 print('                                     ')
+        #                 print('                                     ')
 
 
                     
@@ -118,8 +132,8 @@ for listCarsCategory in produclinks:
             
 
 
-        except:
-            continue
+        # except:
+        #     continue
     
             # for itemsub in urlItemproduct
             

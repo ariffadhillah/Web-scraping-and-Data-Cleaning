@@ -24,7 +24,7 @@ soup = BeautifulSoup(r.content, 'lxml')
 
 # tekigou_icon
 
-listbrakerotor = soup.find_all('div', 'tekigou_icon')[1:]
+listbrakerotor = soup.find_all('div', class_='tekigou_icon')[1:]
 
 
 listbrakerotorlinks = []
@@ -78,6 +78,7 @@ for pagelistbrakerotor in listbrakerotorlinks:
 
                         if len(typebrakerotor) < 10:
                             typebrakerotor = td_elements[1].text.strip()
+                            
                         
                         if len(td_elements) < 12:
                             partNumberbrakerotor = td_elements[2].text.strip()
