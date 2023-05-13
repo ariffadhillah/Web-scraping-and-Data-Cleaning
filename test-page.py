@@ -9,10 +9,10 @@ data = []
 # # # ///////////////////////////////////////////////////////////
 
 
-# baseurl = 'https://www.endless-sport.co.jp'
-# headers = {
-#     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58'
-# }
+baseurl = 'https://www.endless-sport.co.jp'
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58'
+}
 
 # brake_line = baseurl + '/products/brake_line/index.html'
 
@@ -317,9 +317,9 @@ data = []
 
 
 # baseurl = 'https://www.endless-sport.co.jp'
-headers = {
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58'
-}
+# headers = {
+#     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58'
+# }
 
 # # Page Brake pads
 
@@ -343,149 +343,172 @@ headers = {
 #     r = requests.get(pagelistbrakerotor, headers=headers)
 #     soup = BeautifulSoup(r.content, 'lxml')
 
-# url ='https://www.endless-sport.co.jp/products/suspension/index_toyota.html'
+
+# benar suspension
+
+# url ='https://www.endless-sport.co.jp/products/suspension/index_lexus.html'
 
 # r = requests.get(url, headers=headers)
 # soup = BeautifulSoup(r.content, 'lxml')
 
+# makebrakerotor = soup.find('div', 'maintitle_pc_box2').text.strip()
 
-# makesuspension = soup.find('div', 'maintitle_pc_box2').text.strip()
+# divmodel = soup.find_all('div', class_='slidebox2')[1:]        
+# for div in divmodel:
+#     engine_cc = div.text.strip() 
+            
+#     iframesimport = div.find_next_sibling('div').find_all('iframe')
+#     for iframeimport in iframesimport:
+#         src = iframeimport['src']
+#         iframeimport_content = requests.get(src).content
+#         iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+#         tables = iframeimport_soup.find_all('table')
 
-       
-# iframes = soup.find_all('iframe')
-# for iframe in iframes:
-#     src = iframe['src']
-#     iframe_content = requests.get(src).content
-#     iframe_soup = BeautifulSoup(iframe_content, 'html.parser')
-#     tables = iframe_soup.find_all('table')
+#         for table in tables:
+#             rows = table.find_all('tr')[7:]
+#             for row in rows:
+#                 td_elements = row.find_all('td')
+#                 # print(td_elements)
+#                 removetext = ['test']
+#                 if any(text in td.text.strip() for td in td_elements for text in removetext):
+#                     continue
+#                 try:
+#                     if len(td_elements) == 15:
+#                         CarsMake = td_elements[1].text.strip()
+#                     else:
+#                         CarsMake = ''
+#                 except:
+#                     CarsMake = ''
+                
+#                 try:
+#                     if len(td_elements) == 15:
+#                         CarsMakeModel = td_elements[2].text.strip()
+#                     else:
+#                         CarsMakeModel = ''
+#                 except:
+#                     CarsMakeModel = ''
+                
+#                 try:
+#                     if len(td_elements) == 15:
+#                         CarsMakeModelSeries = td_elements[3].text.strip()
+#                     else:
+#                         CarsMakeModelSeries = ''
+#                 except:
+#                     CarsMakeModelSeries = ''
+            
+#                 try:
+#                     if len(td_elements) == 15:
+#                         CarsPartNumber = td_elements[9].text.strip()
+#                     else:
+#                         CarsPartNumber = ''
+#                 except:
+#                     CarsPartNumber = ''
+#                 # print(engine_cc, CarsMake, CarsMakeModel, CarsMakeModelSeries, CarsPartNumber)
+
+#                 endless = {
+#                     'Parttype (category)': makebrakerotor,
+#                     'Parttype URL (category)': '',
+#                     'Make': CarsMake,
+#                     'Make URL': '',
+#                     'Model': 'Model  ' +  CarsMakeModel,
+#                     'Model URL': '',
+#                     'Year':  '',
+#                     'Series': CarsMakeModelSeries,
+#                     'Engine cc': 'Engine cc  ' + engine_cc,
+#                     'Type': '',
+#                     'PartNumber': CarsPartNumber,
+#                 }
+
+#                 if CarsMake and CarsMakeModel and CarsMakeModelSeries and CarsPartNumber:
+#                     data.append(endless)
+#                     print('Saving', endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+
+
+# brake_line = baseurl + '/products/suspension/index_functionxplus.html'
+# r = requests.get(brake_line, headers=headers, verify=False)
+# soup = BeautifulSoup(r.content, 'lxml')
+
+# listbrake_line = soup.find('select', onchange='location.href=value;')
+
+# itembrake_line = listbrake_line.find_all('option')[:2]
+# linknameCarsbrake_line = [option['value'] for option in itembrake_line if option.has_attr('value')]
+
+# for listbrake_linelinks in linknameCarsbrake_line:
+#     r = requests.get(listbrake_linelinks, headers=headers, verify=False)
+#     soup = BeautifulSoup(r.content, 'lxml')
     
-#     year = ''       
-#     model =''
-#     typebraek_line = ''
-#     partNumberbraek_line = ''
-#     series = ''
-                    
-#     for table in tables:
-#         rows = table.find_all('tr')[7:]
-#         for row in rows:
-#             td_elementsmodel = row.find_all('td')
-           
-            
-#             td_elementCarModel = row.find_all('td')
-#             removetext = ['test']
-#             if any(text in td.text.strip() for td in td_elementCarModel for text in removetext):
-#                 continue
-#             try:
-#                 if len(td_elementCarModel) == 14:
-#                     CarModel = td_elementCarModel[1].text.strip() 
-#                 else:
-#                     CarModel = ' '                                             
-#             except:
-#                 None      
-            
-#             td_elementCarSeries = row.find_all('td')
-#             removetext = ['test']
-#             if any(text in td.text.strip() for td in td_elementCarSeries for text in removetext):
-#                 continue
-#             try:
-#                 if len(td_elementCarSeries) == 14:
-#                     CarSeries = td_elementCarSeries[2].text.strip()
-#                 else:
-#                     CarSeries = ' '
-                                             
-#             except:
-#                 None      
-            
-            
-#             td_elementpartNumber = row.find_all('td')
-#             removetext = ['test']
-#             if any(text in td.text.strip() for td in td_elementpartNumber for text in removetext):
-#                 continue
-#             try:
-#                 if len(td_elementpartNumber) == 14:
-#                     partNumber = td_elementpartNumber[2].text.strip() 
-#                 else:
-#                     partNumber = ' '                                             
-#             except:
-#                 None      
-            
-#             endless = {
-#                 'Parttype (category)': 'サスペンション',
-#                 'Parttype URL (category)': '',
-#                 'Make': makesuspension,
-#                 'Make URL': '',
-#                 'Model':  CarModel,
-#                 'Model URL': '',
-#                 'Year':  '',
-#                 'Series': CarSeries,
-#                 'Engine cc': '',
-#                 'Type': '',
-#                 'PartNumber': partNumber,
-#             }
-#             data.append(endless)
-#             print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+#     makesuspension = soup.find('div', 'maintitle_pc_box2').text.strip()
+#     iframes = soup.find_all('iframe')
+
+#     for iframe in iframes:
+#         src = iframe['src']
+#         iframe_content = requests.get(src).content
+#         iframe_soup = BeautifulSoup(iframe_content, 'html.parser')
+#         tables = iframe_soup.find_all('table')
+
+#         for table in tables:
+#             rows = table.find_all('tr')[7:]
+#             for row in rows:
+#                 td_elements = row.find_all('td')
+#                 removetext = ['test']
+#                 if any(text in td.text.strip() for td in td_elements for text in removetext):
+#                     continue
+#                 try:
+#                     if len(td_elements) == 14:
+#                         CarModel = td_elements[1].text.strip()
+#                     else:
+#                         CarModel = ''
+#                 except:
+#                     CarModel = ''
+
+#                 try:
+#                     if len(td_elements) == 14:
+#                         CarSeries = td_elements[2].text.strip()
+#                     else:
+#                         CarSeries = ''
+#                 except:
+#                     CarSeries = ''
+
+#                 try:
+#                     if len(td_elements) == 14:
+#                         partNumber = td_elements[3].text.strip()
+#                     else:
+#                         partNumber = ''
+#                 except:
+#                     partNumber = ''
+
+#                 endless = {
+#                     'Parttype (category)': 'サスペンション',
+#                     'Parttype URL (category)': '',
+#                     'Make': makesuspension,
+#                     'Make URL': '',
+#                     'Model':  CarModel,
+#                     'Model URL': '',
+#                     'Year':  '',
+#                     'Series': CarSeries,
+#                     'Engine cc': '',
+#                     'Type': '',
+#                     'PartNumber': partNumber,
+#                 }
+
+#                 if CarModel and CarSeries and partNumber:
+#                     data.append(endless)
+#                     print('Saving', endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
 
 
+# itembrake_line = listbrake_line.find_all('option')[2:]
+# linknameCarsbrake_line = [option['value'] for option in itembrake_line if option.has_attr('value')]
 
-url ='https://www.endless-sport.co.jp/products/suspension/index_toyota.html'
+# for listbrake_linelinks in linknameCarsbrake_line:
+#     r = requests.get(listbrake_linelinks, headers=headers, verify=False)
+#     soup = BeautifulSoup(r.content, 'lxml')
+    
+#     makesuspension = soup.find('div', 'maintitle_pc_box2').text.strip()
+    
+#     iframes = soup.find_all('iframe')
 
-r = requests.get(url, headers=headers)
-soup = BeautifulSoup(r.content, 'lxml')
-
-makesuspension = soup.find('div', 'maintitle_pc_box2').text.strip()
-iframes = soup.find_all('iframe')
-
-for iframe in iframes:
-    src = iframe['src']
-    iframe_content = requests.get(src).content
-    iframe_soup = BeautifulSoup(iframe_content, 'html.parser')
-    tables = iframe_soup.find_all('table')
-
-    for table in tables:
-        rows = table.find_all('tr')[7:]
-        for row in rows:
-            td_elements = row.find_all('td')
-            removetext = ['test']
-            if any(text in td.text.strip() for td in td_elements for text in removetext):
-                continue
-            try:
-                if len(td_elements) == 14:
-                    CarModel = td_elements[1].text.strip()
-                else:
-                    CarModel = ''
-            except:
-                CarModel = ''
-
-            try:
-                if len(td_elements) == 14:
-                    CarSeries = td_elements[2].text.strip()
-                else:
-                    CarSeries = ''
-            except:
-                CarSeries = ''
-
-            try:
-                if len(td_elements) == 14:
-                    partNumber = td_elements[3].text.strip()
-                else:
-                    partNumber = ''
-            except:
-                partNumber = ''
-
-            endless = {
-                'Parttype (category)': 'サスペンション',
-                'Parttype URL (category)': '',
-                'Make': makesuspension,
-                'Make URL': '',
-                'Model':  CarModel,
-                'Model URL': '',
-                'Year':  '',
-                'Series': CarSeries,
-                'Engine cc': '',
-                'Type': '',
-                'PartNumber': partNumber,
-            }
-
-            if CarModel and CarSeries and partNumber:
-                data.append(endless)
-                print('Saving', endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+#     for iframe in iframes:
+#         src = iframe['src']
+#         iframe_content = requests.get(src).content
+#         iframe_soup = BeautifulSoup(iframe_content, 'html.parser')
+#         tables = iframe_soup.find_all('table')
