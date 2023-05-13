@@ -9,7 +9,7 @@ headers = {
 }
 
 
-fields = ['Parttype (category)', 'Parttype URL (category)', 'Make', 'Make URL', 'Model', 'Model URL', 'Year', 'Engine cc', 'Type', 'PartNumber']
+fields = ['Parttype (category)', 'Parttype URL (category)', 'Make', 'Make URL', 'Model', 'Model URL', 'Series', 'Year', 'Engine cc', 'Type', 'PartNumber']
 filename = 'endless.csv'
 
 data = []
@@ -99,13 +99,14 @@ for carName in listCarsName:
                                     'Make URL': carName,
                                     'Model': model.text.strip(),
                                     'Model URL': pageCarlist,
+                                    'Series': '',
                                     'Year': year[1].text.strip(),
                                     'Engine cc': engine[2].text.strip(),
                                     'Type': type_[3].text.strip(),
                                     'PartNumber': PartNumber.replace(' ', '\n'),
                                 }
                                 data.append(endless)
-                                # print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])
+                                print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])
 
                                 with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                                     writer = csv.DictWriter(csvfile, fieldnames=fields)
@@ -177,13 +178,14 @@ for pageCarListImport in listImportedCar:
                         'Make URL': pageBrakepads,
                         'Model': modelimport.text.strip(),
                         'Model URL': pageCarListImport,
+                        "Series": ' ',
                         'Year': year[3].text.strip().replace('～', ' ～ '),
                         'Engine cc': ' ',
                         'Type': type_[4].text.strip(),
                         'PartNumber': PartNumber.replace(' ', '\n'),
                     }
                     data.append(endless)
-                    # print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])                    
+                    print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])                    
                     with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                         writer = csv.DictWriter(csvfile, fieldnames=fields)
                         writer.writeheader()
@@ -260,13 +262,14 @@ for linkMake in linkModel:
                                 'Make URL': crasListBrakeCaliper,
                                 'Model': model,
                                 'Model URL': linkMake,
+                                "Series": '',
                                 'Year': '',
                                 'Engine cc': enginecc,
                                 'Type': type_,
                                 'PartNumber': PartNumber,
                             }
                             data.append(endless)
-                            # print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])                    
+                            print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])                    
                             with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                                 writer = csv.DictWriter(csvfile, fieldnames=fields)
                                 writer.writeheader()
@@ -275,8 +278,10 @@ for linkMake in linkModel:
                     except:
                         None
                         
+
 # Page Brake pads
 time.sleep(.1) 
+
 brake_rotor = baseurl + '/products/brake_rotor/index.html'
 
 r = requests.get(brake_rotor, headers=headers)
@@ -314,61 +319,269 @@ for pagelistbrakerotor in listbrakerotorlinks:
             iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
             tables = iframeimport_soup.find_all('table')
 
+            year = ''       
+            model =''
+            typebraek_line = ''
+            partNumberbraek_line = ''
+            series = ''
+                    
             for table in tables:
-                partNumberbrakerotor = []
-                rows = table.find_all('tr')[5:]
-                # print(rows)
+                rows = table.find_all('tr')[4:]
                 for row in rows:
-                    if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                    td_elementsmodel = row.find_all('td')
+                    removetext = ['商品名', '1PCSブレーキローター','2PCSブレーキローター','3PCSブレーキローター','¥61,600','補修ブレーキローター','品番','※純正ブレーキローターの寸法をご確認くださいませ。','※ベルハウジング及び固定ピンは純正を再使用してください。（固定用ボルト、ナットは付属します）','※ER154、155のディスクローター補修部品は、純正ブレーキローターの補修用としてはご使用いただけませんのでご注意ください。','※レガシィBE／BHは車種により装着できない場合がございます。車検証情報から適合調査をさせて頂きます。','※ディスク単体での販売となります。ベルハウジング及び固定ピンは純正をご使用ください。','※純正に比べ、厚みが25mmから26.5mmへ変更しております。ブレーキパッドのシムは外してからご使用ください。','※ドリルドタイプのみとなります。','※ベルハウジングはステンレス製でシルバーとなります。色変更はお受けしておりません。','※リアドラム部はスチール製となります。','※ASSYでの販売となります。','※本製品の販売につきましては、エンドレス認定ショップのみとなります。ご購入をご希望される方は、弊社までお問い合わせください。','※1 本製品の販売につきましては、生産を一時終了させていただいております。（詳しくはこちらをご覧くださいませ）','ベルハウジングの色はレーシングアルマイトとなります。色変更に関しては「ベルハウジングオーダーカラー」をご覧くださいませ','※ベルハウジングの色はレーシングアルマイトとなります。色変更に関しては「 ベルハウジングオーダーカラー」をご覧くださいませ']
+                    if any(text in td.text.strip() for td in td_elementsmodel for text in removetext):
                         continue
-                    td_elements = row.find_all('td')
-                    removetext = ['※ER154、155のディスクローター補修部品は、純正ブレーキローターの補修用としてはご使用いただけませんのでご注意ください。','※レガシィBE／BHは車種により装着できない場合がございます。車検証情報から適合調査をさせて頂きます。','※レガシィBL／BPは車種により装着できない場合がございます。車検証情報から適合調査をさせて頂きます。','※ディスク単体での販売となります。ベルハウジング及び固定ピンは純正をご使用ください。','	※レガシィBL／BPは車種により装着できない場合がございます。車検証情報から適合調査をさせて頂きます','※レガシィBE／BHは車種により装着できない場合がございます。車検証情報から適合調査をさせて頂きます','1PCSブレーキローター','2PCSブレーキローター','3PCSブレーキローター','※純正に比べ、厚みが25mmから26.5mmへ変更しております。ブレーキパッドのシムは外してからご使用ください','商品名','¥68,200','¥60,500','¥61,600','¥44,000','補修ブレーキローター','※純正ブレーキローターの寸法をご確認くださいませ。','¥36,300','¥66,000','※ベルハウジング及び固定ピンは純正を再使用してください。（固定用ボルト、ナットは付属します','¥52,800','¥30,800','¥38,500','※ベルハウジングの色はレーシングアルマイトとなります。色変更に関しては「ベルハウジングオーダーカラー」をご覧くださいませ','¥75,900','※ドリルドタイプのみとなります。','	※ベルハウジングはステンレス製でシルバーとなります。色変更はお受けしておりません','※リアドラム部はスチール製となります','※ASSYでの販売となります。','※本製品の販売につきましては、エンドレス認定ショップのみとなります。ご購入をご希望される方は、弊社までお問い合わせください。','※1 本製品の販売につきましては、生産を一時終了させていただいております。（詳しくはこちらをご覧くださいませ）','※ベルハウジングはステンレス製でシルバーとなります。色変更はお受けしておりません。','¥67,100','¥74,800','¥67,100','¥74,800' ,'¥67,000','¥73,700']
-                    if any(text in td.text.strip() for td in td_elements for text in removetext):
-                        continue 
-                    try: 	
-                        # partNumberbrakerotor = td_elements[1].text.strip()
-                        if len(td_elements) < 12:
-                            typebrakerotor = td_elements[1].text.strip()
-                    
-                        elif len(td_elements) < 4:
-                            typebrakerotor = td_elements[1].text.strip()
+                    try:
+                        if len(td_elementsmodel) == 8:
+                            model = td_elementsmodel[1].text.strip()   
+                        elif len(td_elementsmodel) == 7:
+                            continue
                         else:
-                            typebrakerotor = td_elements[1].text.strip()                    
-
-                        if len(typebrakerotor) < 10:
-                            typebrakerotor = td_elements[1].text.strip()
-                        
-                        if len(td_elements) < 12:
-                            partNumberbrakerotor = td_elements[2].text.strip()
-                    
-                        elif len(td_elements) < 4:
-                            partNumberbrakerotor = td_elements[2].text.strip()
-                        else:
-                            partNumberbrakerotor = td_elements[2].text.strip()                    
-
-                        if len(partNumberbrakerotor) < 10:
-                            partNumberbrakerotor = td_elements[2].text.strip()
-                            # continue
-                        # print(partNumberbrakerotor)
-                        if  partNumberbrakerotor and makebrakerotor and partNumberbrakerotor and typebrakerotor:
-                            endless = {
-                                'Parttype (category)': 'ブレーキローター',
-                                'Parttype URL (category)': brake_rotor,
-                                'Make': makebrakerotor,
-                                'Make URL': pagelistbrakerotor,
-                                'Model': modelbrakerotor,
-                                'Model URL': pagelistbrakerotor,
-                                'Year': '',
-                                'Engine cc': '',
-                                'Type': typebrakerotor,
-                                'PartNumber': partNumberbrakerotor,
-                            }
-                            data.append(endless)
-                            print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])                    
-                            with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-                                writer = csv.DictWriter(csvfile, fieldnames=fields)
-                                writer.writeheader()
-                                for item in data:
-                                    writer.writerow(item)
+                            model = td_elementsmodel[1].text.strip()   
+                                             
                     except:
-                        None 
+                        None                
+                   
+                    td_elementspartNumber = row.find_all('td')
+                    removetext = ['品番']
+                    if any(text in td.text.strip() for td in td_elementspartNumber for text in removetext):
+                        continue
+                    try:
+                        if len(td_elementspartNumber) == 8:
+                            partNumberbrakerotor = td_elementspartNumber[2].text.strip()   
+                        elif len(td_elementspartNumber) == 7:
+                            continue
+                        else:
+                            partNumberbrakerotor = td_elementspartNumber[2].text.strip()   
+                                             
+                    except:
+                        None      
+                   
+                    endless = {
+                        'Parttype (category)': 'ブレーキライン',
+                        'Parttype URL (category)': '',
+                        'Make': makebrakerotor,
+                        'Make URL': '',
+                        'Model':  modelbrakerotor,
+                        'Model URL': '',
+                        'Year':  '',
+                        'Series': model,
+                        'Engine cc': '',
+                        'Type': '',
+                        'PartNumber':partNumberbrakerotor,
+                    }
+                    data.append(endless)
+                    print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+                    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=fields)
+                        writer.writeheader()
+                        for item in data:
+                            writer.writerow(item)
+
+
+
+brake_line = baseurl + '/products/brake_line/index.html'
+
+r = requests.get(brake_line, headers=headers)
+soup = BeautifulSoup(r.content, 'lxml')
+
+listbrake_line = soup.find('select', onchange='location.href=value;')
+
+itembrake_line = listbrake_line.find_all('option')[:10]
+linknameCarsbrake_line = [option['value'] for option in itembrake_line if option.has_attr('value')]
+# listbrake_linelinks.append(linknameCarsbrake_line)
+# print(linknameCarsbrake_line)
+
+for listbrake_linelinks in linknameCarsbrake_line:
+    r = requests.get(listbrake_linelinks, headers=headers)
+    soup = BeautifulSoup(r.content, 'lxml')
+    
+    makebraek_line = soup.find('div', class_='maintitle_pc_box2').text.strip()
+    divmodel = soup.find_all('div', class_='slidebox2')
+
+    for div in divmodel:
+        modelbraek_line = div.text.strip() 
+                
+        iframesimport = div.find_next_sibling('div').find_all('iframe')
+        for iframeimport in iframesimport:
+            src = iframeimport['src']
+            iframeimport_content = requests.get(src).content
+            iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+            tables = iframeimport_soup.find_all('table')
+            
+            year = ''       
+            model =''
+            typebraek_line = ''
+            partNumberbraek_line = ''
+            series = ''
+            
+            for table in tables:
+                rows = table.find_all('tr')[3:]
+                for row in rows:
+                    try:
+                        td_elementspartNumber = row.find_all('td')
+                        # Seri
+                        if len(td_elementspartNumber) == 15:
+                            partNumberbraek_line = td_elementspartNumber[3].text.strip()
+                        elif len(td_elementspartNumber) == 14:
+                            partNumberbraek_line = td_elementspartNumber[2].text.strip()
+                        else:
+                            partNumberbraek_line = ' '
+                    except:
+                        partNumberbraek_line = ''
+
+                    try:                    
+                        td_elementstypebraek_line = row.find_all('td')
+                        if len(td_elementstypebraek_line) == 15:
+                            typebraek_line = td_elementstypebraek_line[2].text.strip()
+                        elif len(td_elementstypebraek_line) == 14:
+                            typebraek_line = td_elementstypebraek_line[1].text.strip()
+                        else:
+                            typebraek_line = ''
+                    except:
+                        typebraek_line = ' '
+                    
+                    # print(modelbraek_line, typebraek_line, partNumberbraek_line)
+
+                    if typebraek_line and partNumberbraek_line:
+                        endless = {
+                            'Parttype (category)': 'ブレーキライン',
+                            'Parttype URL (category)': '',
+                            'Make': makebraek_line,
+                            'Make URL': listbrake_linelinks,
+                            'Model':  modelbraek_line,
+                            'Model URL': '',
+                            'Year':  '',
+                            'Series': '',
+                            'Engine cc': '',
+                            'Type': typebraek_line,
+                            'PartNumber':partNumberbraek_line,
+                        }
+                        data.append(endless)
+                        print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+                        with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=fields)
+                            writer.writeheader()
+                            for item in data:
+                                writer.writerow(item)
+
+        
+
+
+
+
+
+brake_line = baseurl + '/products/brake_line/index.html'
+
+r = requests.get(brake_line, headers=headers)
+soup = BeautifulSoup(r.content, 'lxml')
+
+listbrake_line = soup.find('select', onchange='location.href=value;')
+
+itembrake_line = listbrake_line.find_all('option')[10:]
+linknameCarsbrake_line = [option['value'] for option in itembrake_line if option.has_attr('value')]
+# listbrake_linelinks.append(linknameCarsbrake_line)
+# print(linknameCarsbrake_line)
+
+for listbrake_linelinks in linknameCarsbrake_line:
+    r = requests.get(listbrake_linelinks, headers=headers)
+    soup = BeautifulSoup(r.content, 'lxml')
+    
+    makebraek_line = soup.find('div', class_='maintitle_pc_box2').text.strip()
+    divmodel = soup.find_all('div', class_='slidebox2')
+
+    for div in divmodel:
+        modelbraek_line = div.text.strip() 
+                
+        iframesimport = div.find_next_sibling('div').find_all('iframe')
+        for iframeimport in iframesimport:
+            src = iframeimport['src']
+            iframeimport_content = requests.get(src).content
+            iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+            tables = iframeimport_soup.find_all('table')
+            
+            year = ''       
+            model =''
+            typebraek_line = ''
+            partNumberbraek_line = ''
+            series = ''
+                    
+            for table in tables:
+                rows = table.find_all('tr')[4:]
+                for row in rows:
+                    td_elementsmodel = row.find_all('td')
+                    try:
+                        if len(td_elementsmodel) == 11:
+                            model = td_elementsmodel[1].text.strip()                    
+                    except:
+                        None                
+                
+                    try:
+                        td_elementsyear = row.find_all('td')
+                        if len(td_elementsyear) == 11:
+                            year = td_elementsyear[3].text.strip()
+                        elif len(td_elementsyear) == 10:
+                            year = td_elementsyear[2].text.strip()
+                        else:
+                            year = ' '
+                    except:
+                        year = ' '
+                    
+                    try:
+                        # Seri
+                        td_elementsseries = row.find_all('td')
+                        if len(td_elementsseries) == 11:
+                            series = td_elementsseries[4].text.strip()
+                        elif len(td_elementsseries) == 10:
+                            series = td_elementsseries[3].text.strip()
+                        else:
+                            series = '  '
+                    except:
+                        series = '  '
+                        
+                    try:
+                        td_elementspartNumber = row.find_all('td')
+                        # Seri
+                        if len(td_elementspartNumber) == 11:
+                            partNumberbraek_line = td_elementspartNumber[5].text.strip()
+                        elif len(td_elementspartNumber) == 10:
+                            partNumberbraek_line = td_elementspartNumber[4].text.strip()
+                        else:
+                            partNumberbraek_line = ' '
+                    except:
+                        partNumberbraek_line = ''
+
+                    try:                    
+                        td_elementstypebraek_line = row.find_all('td')
+                        if len(td_elementstypebraek_line) == 11:
+                            typebraek_line = td_elementstypebraek_line[2].text.strip()
+                        elif len(td_elementstypebraek_line) == 10:
+                            typebraek_line = td_elementstypebraek_line[1].text.strip()
+                        else:
+                            typebraek_line = ''
+                    except:
+                        typebraek_line = ' '
+
+                    endless = {
+                        'Parttype (category)': 'ブレーキライン',
+                        'Parttype URL (category)': brake_line,
+                        'Make': modelbraek_line,
+                        'Make URL': listbrake_linelinks,
+                        'Model':  model,
+                        'Model URL': '',
+                        'Year':  year,
+                        'Series': series,
+                        'Engine cc': '',
+                        'Type': typebraek_line,
+                        'PartNumber':partNumberbraek_line,
+                    }
+                    data.append(endless)
+                    print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+                    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=fields)
+                        writer.writeheader()
+                        for item in data:
+                            writer.writerow(item)
+
+
