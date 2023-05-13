@@ -23,7 +23,7 @@ categoryProduct = []
 # Page Brake pads
 pageBrakepads = baseurl + '/products/brake_pad/car_list.html'
 
-r = requests.get(pageBrakepads, headers=headers)
+r = requests.get(pageBrakepads, headers=headers, verify=False)
 soup = BeautifulSoup(r.content, 'lxml')
 listCarsName = []
 listImportedCar = []
@@ -37,7 +37,7 @@ carList = brakepad_search_whole.find('div', id='right_menu_box')
 for linkcars in carList.find_all('a', href=True):
     listCarsName.append(linkcars['href'])
 for carName in listCarsName:
-    urlcar = requests.get(carName, headers=headers)
+    urlcar = requests.get(carName, headers=headers, verify=False)
     soup = BeautifulSoup(urlcar.content, 'lxml')
     # print(carName)
     carNameIcons = soup.find_all('div', id='ewig_pad_whole')
@@ -52,7 +52,7 @@ for carName in listCarsName:
 
             for pageCarlist in productList:
                 time.sleep(.1)
-                r = requests.get(pageCarlist, headers=headers)
+                r = requests.get(pageCarlist, headers=headers, verify=False)
                 soup = BeautifulSoup(r.content, 'lxml')
                 # print(pageCarlist)
                 
@@ -106,8 +106,7 @@ for carName in listCarsName:
                                     'PartNumber': PartNumber.replace(' ', '\n'),
                                 }
                                 data.append(endless)
-                                print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])
-
+                                print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
                                 with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                                     writer = csv.DictWriter(csvfile, fieldnames=fields)
                                     writer.writeheader()
@@ -124,7 +123,7 @@ for linkcarsimported in importedCar.find_all('a', href=True):
 
 for pageCarListImport in listImportedCar:
     time.sleep(.1)
-    r = requests.get(pageCarListImport, headers=headers)
+    r = requests.get(pageCarListImport, headers=headers, verify=False)
     soup = BeautifulSoup(r.content, 'lxml')    
 
     # testdiv = soup.find('div', id='maintitle_pc')
@@ -185,7 +184,7 @@ for pageCarListImport in listImportedCar:
                         'PartNumber': PartNumber.replace(' ', '\n'),
                     }
                     data.append(endless)
-                    print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])                    
+                    print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])                   
                     with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                         writer = csv.DictWriter(csvfile, fieldnames=fields)
                         writer.writeheader()
@@ -212,7 +211,7 @@ for urlCarsList in leftmenuindex1.find_all('a', href=True):
     links_index2.append(urlCarsList['href'])
 
 for crasListBrakeCaliper in links_index2:
-    r = requests.get(crasListBrakeCaliper, headers=headers)
+    r = requests.get(crasListBrakeCaliper, headers=headers, verify=False)
     soup = BeautifulSoup(r.content, 'lxml')
     
     listCarsBrakeCaliper = soup.find_all('div', id='maker_icons')
@@ -222,7 +221,7 @@ for crasListBrakeCaliper in links_index2:
             linkModel.append(linkMake['href'])
 
 for linkMake in linkModel:
-    r = requests.get(linkMake, headers=headers)
+    r = requests.get(linkMake, headers=headers, verify=False)
     soup = BeautifulSoup(r.content, 'lxml')
 
     make = soup.find('div', class_="maintitle_pc_box2").text.strip()
@@ -269,7 +268,7 @@ for linkMake in linkModel:
                                 'PartNumber': PartNumber,
                             }
                             data.append(endless)
-                            print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['PartNumber'])                    
+                            print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])                    
                             with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                                 writer = csv.DictWriter(csvfile, fieldnames=fields)
                                 writer.writeheader()
@@ -284,7 +283,7 @@ time.sleep(.1)
 
 brake_rotor = baseurl + '/products/brake_rotor/index.html'
 
-r = requests.get(brake_rotor, headers=headers)
+r = requests.get(brake_rotor, headers=headers, verify=False)
 soup = BeautifulSoup(r.content, 'lxml')
 
 # tekigou_icon
@@ -299,7 +298,7 @@ for itembrakerotor in listbrakerotor:
          listbrakerotorlinks.append(namecarslistbrakerotor['href']) 
 
 for pagelistbrakerotor in listbrakerotorlinks:
-    r = requests.get(pagelistbrakerotor, headers=headers)
+    r = requests.get(pagelistbrakerotor, headers=headers, verify=False)
     soup = BeautifulSoup(r.content, 'lxml')
 
     try:
@@ -372,7 +371,7 @@ for pagelistbrakerotor in listbrakerotorlinks:
                         'PartNumber':partNumberbrakerotor,
                     }
                     data.append(endless)
-                    print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+                    print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
                     with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                         writer = csv.DictWriter(csvfile, fieldnames=fields)
                         writer.writeheader()
@@ -383,7 +382,7 @@ for pagelistbrakerotor in listbrakerotorlinks:
 
 brake_line = baseurl + '/products/brake_line/index.html'
 
-r = requests.get(brake_line, headers=headers)
+r = requests.get(brake_line, headers=headers, verify=False)
 soup = BeautifulSoup(r.content, 'lxml')
 
 listbrake_line = soup.find('select', onchange='location.href=value;')
@@ -394,7 +393,7 @@ linknameCarsbrake_line = [option['value'] for option in itembrake_line if option
 # print(linknameCarsbrake_line)
 
 for listbrake_linelinks in linknameCarsbrake_line:
-    r = requests.get(listbrake_linelinks, headers=headers)
+    r = requests.get(listbrake_linelinks, headers=headers, verify=False)
     soup = BeautifulSoup(r.content, 'lxml')
     
     makebraek_line = soup.find('div', class_='maintitle_pc_box2').text.strip()
@@ -459,7 +458,7 @@ for listbrake_linelinks in linknameCarsbrake_line:
                             'PartNumber':partNumberbraek_line,
                         }
                         data.append(endless)
-                        print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+                        print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
                         with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                             writer = csv.DictWriter(csvfile, fieldnames=fields)
                             writer.writeheader()
@@ -474,7 +473,7 @@ for listbrake_linelinks in linknameCarsbrake_line:
 
 brake_line = baseurl + '/products/brake_line/index.html'
 
-r = requests.get(brake_line, headers=headers)
+r = requests.get(brake_line, headers=headers, verify=False)
 soup = BeautifulSoup(r.content, 'lxml')
 
 listbrake_line = soup.find('select', onchange='location.href=value;')
@@ -485,7 +484,7 @@ linknameCarsbrake_line = [option['value'] for option in itembrake_line if option
 # print(linknameCarsbrake_line)
 
 for listbrake_linelinks in linknameCarsbrake_line:
-    r = requests.get(listbrake_linelinks, headers=headers)
+    r = requests.get(listbrake_linelinks, headers=headers,verify=False )
     soup = BeautifulSoup(r.content, 'lxml')
     
     makebraek_line = soup.find('div', class_='maintitle_pc_box2').text.strip()
@@ -577,7 +576,7 @@ for listbrake_linelinks in linknameCarsbrake_line:
                         'PartNumber':partNumberbraek_line,
                     }
                     data.append(endless)
-                    print('Saving',endless['Parttype (category)'], endless['Parttype URL (category)'], endless['Make'], endless['Make URL'], endless['Model'], endless['Model URL'], endless['Year'], endless['Engine cc'], endless['Type'], endless['Series'], endless['PartNumber'])
+                    print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
                     with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                         writer = csv.DictWriter(csvfile, fieldnames=fields)
                         writer.writeheader()
@@ -585,3 +584,156 @@ for listbrake_linelinks in linknameCarsbrake_line:
                             writer.writerow(item)
 
 
+
+
+suspensionUlr = baseurl + '/products/suspension/index_functionxplus.html'
+r = requests.get(suspensionUlr, headers=headers, verify=False)
+soup = BeautifulSoup(r.content, 'lxml')
+
+listsuspension = soup.find('select', onchange='location.href=value;')
+
+itembrake_line = listsuspension.find_all('option')[:2]
+linknameCarsbrake_line = [option['value'] for option in itembrake_line if option.has_attr('value')]
+
+for listsuspensionlinks in linknameCarsbrake_line:
+    r = requests.get(listsuspensionlinks, headers=headers, verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')
+    makesuspension = soup.find('div', 'maintitle_pc_box2').text.strip()
+    iframes = soup.find_all('iframe')
+    for iframe in iframes:
+        src = iframe['src']
+        iframe_content = requests.get(src).content
+        iframe_soup = BeautifulSoup(iframe_content, 'html.parser')
+        tables = iframe_soup.find_all('table')
+        for table in tables:
+            rows = table.find_all('tr')[7:]
+            for row in rows:
+                td_elements = row.find_all('td')
+                removetext = ['test']
+                if any(text in td.text.strip() for td in td_elements for text in removetext):
+                    continue
+                try:
+                    if len(td_elements) == 14:
+                        CarModel = td_elements[1].text.strip()
+                    else:
+                        CarModel = ''
+                except:
+                    CarModel = ''
+
+                try:
+                    if len(td_elements) == 14:
+                        CarSeries = td_elements[2].text.strip()
+                    else:
+                        CarSeries = ''
+                except:
+                    CarSeries = ''
+
+                try:
+                    if len(td_elements) == 14:
+                        partNumber = td_elements[8].text.strip()
+                    else:
+                        partNumber = ''
+                except:
+                    partNumber = ''
+
+                endless = {
+                    'Parttype (category)': 'サスペンション',
+                    'Parttype URL (category)': suspensionUlr,
+                    'Make': makesuspension,
+                    'Make URL': listsuspensionlinks,
+                    'Model':  CarModel,
+                    'Model URL': '',
+                    'Year':  '',
+                    'Series': CarSeries,
+                    'Engine cc': '',
+                    'Type': '',
+                    'PartNumber': partNumber,
+                }
+
+                if CarModel and CarSeries and partNumber:
+                    data.append(endless)
+                    print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
+                    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=fields)
+                        writer.writeheader()
+                        for item in data:
+                            writer.writerow(item)
+
+
+itembrake_line = listsuspension.find_all('option')[2:]
+linknameCarsbrake_line = [option['value'] for option in itembrake_line if option.has_attr('value')]
+
+for listsuspensionlinks in linknameCarsbrake_line:
+    r = requests.get(listsuspensionlinks, headers=headers, verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    makesuspension = soup.find('div', 'maintitle_pc_box2').text.strip()
+
+    divmodel = soup.find_all('div', class_='slidebox2')[1:]        
+    for div in divmodel:
+        engine_cc = div.text.strip()
+        iframesimport = div.find_next_sibling('div').find_all('iframe')
+        for iframeimport in iframesimport:
+            src = iframeimport['src']
+            iframeimport_content = requests.get(src).content
+            iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+            tables = iframeimport_soup.find_all('table')
+            for table in tables:
+                rows = table.find_all('tr')[7:]
+                for row in rows:
+                    td_elements = row.find_all('td')
+                    removetext = ['test']
+                    if any(text in td.text.strip() for td in td_elements for text in removetext):
+                        continue
+                    try:
+                        if len(td_elements) == 15:
+                            CarsMake = td_elements[1].text.strip()
+                        else:
+                            CarsMake = ''
+                    except:
+                        CarsMake = ''
+                    
+                    try:
+                        if len(td_elements) == 15:
+                            CarsMakeModel = td_elements[2].text.strip()
+                        else:
+                            CarsMakeModel = ''
+                    except:
+                        CarsMakeModel = ''                    
+                    try:
+                        if len(td_elements) == 15:
+                            CarsMakeModelSeries = td_elements[3].text.strip()
+                        else:
+                            CarsMakeModelSeries = ''
+                    except:
+                        CarsMakeModelSeries = ''                
+                    try:
+                        if len(td_elements) == 15:
+                            CarsPartNumber = td_elements[9].text.strip()
+                        else:
+                            CarsPartNumber = ''
+                    except:
+                        CarsPartNumber = ''
+
+                    endless = {
+                        'Parttype (category)': 'サスペンション',
+                        'Parttype URL (category)': suspensionUlr,
+                        'Make': makesuspension,
+                        'Make URL': listsuspensionlinks,
+                        'Model': CarsMakeModel,
+                        'Model URL': '',
+                        'Year':  '',
+                        'Series': CarsMakeModelSeries,
+                        'Engine cc':  '',
+                        'Type': CarsMake,
+                        'PartNumber': CarsPartNumber,
+                    }
+
+                    if CarsMake and CarsMakeModel and CarsMakeModelSeries and CarsPartNumber:
+                        data.append(endless)
+                        print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
+                        with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=fields)
+                            writer.writeheader()
+                            for item in data:
+                                writer.writerow(item)
