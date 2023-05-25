@@ -28,8 +28,6 @@ soup = BeautifulSoup(r.content, 'lxml')
 listCarsName = []
 listImportedCar = []
 
-
-
 brakepad_search_whole = soup.find('div', id='brakepad_search_whole')
 
 # 
@@ -78,9 +76,6 @@ for carName in listCarsName:
                     for table in tables:
                         rows = table.find_all('tr')[5:]
                         for row in rows:
-                            # tambahkan kondisi untuk memeriksa apakah elemen tr memiliki atribut style yang mengatur tinggi
-                            # if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
-                            #     continue  # lewati jika ada atribut style dengan ketinggian yang ditentukan
                             year = row.find_all('td')
                             engine = row.find_all('td')
                             type_ = row.find_all('td')
@@ -91,20 +86,20 @@ for carName in listCarsName:
                             else:
                                 PartNumber = ""                            
 
-                            if year and engine and type_ and PartNumber and model and parttype_category_url and parttype_category:
-                                endless = {
-                                    'Parttype (category)': parttype_category,
-                                    'Parttype URL (category)': parttype_category_url,
-                                    'Make': url.split('/')[-2].replace('-', ' ').title(),
-                                    'Make URL': carName,
-                                    'Model': model.text.strip(),
-                                    'Model URL': pageCarlist,
-                                    'Series': '',
-                                    'Year': year[1].text.strip(),
-                                    'Engine cc': engine[2].text.strip(),
-                                    'Type': type_[3].text.strip(),
-                                    'PartNumber': PartNumber.replace(' ', '\n'),
-                                }
+                            endless = {
+                                'Parttype (category)': parttype_category,
+                                'Parttype URL (category)': parttype_category_url,
+                                'Make': url.split('/')[-2].replace('-', ' ').title(),
+                                'Make URL': carName,
+                                'Model': model.text.strip(),
+                                'Model URL': pageCarlist,
+                                'Series': '',
+                                'Year': year[1].text.strip(),
+                                'Engine cc': engine[2].text.strip() if len(engine) >= 3 else '',
+                                'Type': type_[3].text.strip() if len(type_) >= 4 else '',
+                                'PartNumber': PartNumber.replace(' ', '\n'),
+                            }
+                            if year and PartNumber and engine:
                                 data.append(endless)
                                 print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
                                 with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
@@ -112,84 +107,638 @@ for carName in listCarsName:
                                     writer.writeheader()
                                     for item in data:
                                         writer.writerow(item)
-time.sleep(.1)                
-#product imported 
-importedCar = brakepad_search_whole.find_all('div', id='right_menu_box')[1]
-for linkcarsimported in importedCar.find_all('a', href=True):
-    urlimported = linkcarsimported['href'].replace('https://', 'https://www.')
-    if urlimported not in processed_urls:
-        listImportedCar.append(urlimported)
-        processed_urls.add(urlimported)
-
-for pageCarListImport in listImportedCar:
-    time.sleep(.1)
-    r = requests.get(pageCarListImport, headers=headers, verify=False)
-    soup = BeautifulSoup(r.content, 'lxml')    
-
-    # testdiv = soup.find('div', id='maintitle_pc')
-    # print(testdiv)
-
-    cautionContents = soup.find('div', {'class': 'caution_contents'}) or soup.find('div', {'id': 'caution_contents'})
-    if cautionContents:
-        caution_links = cautionContents.find_all('a')
-        category = caution_links[1]
-        parttype_category_url = category['href']
-        parttype_category = category.text.strip()
 
 
-    iframesimport = soup.find_all('iframe')
-    for iframeimport in iframesimport:
-        src = iframeimport['src']
-        iframeimport_content = requests.get(src).content
-        iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
-        tablesimport = iframeimport_soup.find_all('table')
-        # print(tables)
-        for tableMake in tablesimport:
-            rowsMake = tableMake.find_all('tr')[1]
-            makeimport =  rowsMake.find_all('td')[1]
+urllistimport1 =['https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_AUDI.html','https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_MERCEDES.html']
+
+for urlimportlist in urllistimport1:
+    r = requests.get(urlimportlist, headers=headers ,verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')  
+
+iframesimport = soup.find_all('iframe')
+for iframeimport in iframesimport:
+    src = iframeimport['src']
+    iframeimport_content = requests.get(src).content
+    iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+    tablesimport = iframeimport_soup.find_all('table')     
         
-        for tablemodelimport in tablesimport:
-            rowsmodelimport = tablemodelimport.find_all('tr')[2]
-            modelimport =  rowsmodelimport.find_all('td')[1]
+    for tablemodelimport in tablesimport:
+        rowsmodelimport = tablemodelimport.find_all('tr')[2]
+        modelimport =  rowsmodelimport.find_all('td')[1]
+    for table in tablesimport:
+        rows = table.find_all('tr')[5:]
+        for row in rows:
+            removetext = ['※1 EIP132かEIP149のいずれかになります。形状図にてご確認ください。','※2 EIP159、EIP162、EIP165、EIP232の価格は他の品番と異なりますのでご注意ください。']
+            if any(text in td.text.strip() for td in row for text in removetext):
+                continue
+                # tambahkan kondisi untuk memeriksa apakah elemen tr memiliki atribut style yang mengatur tinggi
+            if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                continue  # lewati jika ada atribut style dengan ketinggian yang ditentukan
+            try:
+                td_elementsmodel = row.find_all('td')
+                if len(td_elementsmodel) == 12:
+                    model = td_elementsmodel[1].text.strip()   
+                else:
+                    model = ''           
+            except:
+                model = ''           
+            try:
+                td_elementsseries = row.find_all('td')
+                if len(td_elementsseries) == 12:
+                    series = td_elementsseries[5].text.strip()
+                else:
+                    series = ''
+            except:
+                series = ''           
+                # None
+            try:
+                td_elementsyears = row.find_all('td')
+                if len(td_elementsyears) == 12:
+                    years = td_elementsyears[4].text.strip()
+                else:
+                    years = ''           
+            except:
+                years = ''           
+
+            partNumberFront = row.find_all('td')
+            partNumberRear = row.find_all('td')[9:]
+            if partNumberFront and partNumberRear:
+                partNumber = partNumberFront[6].text.strip() +' '+ partNumberRear[0].text.strip()
+            else:
+                partNumber = ""
+            
+            endless = {
+                'Parttype (category)': 'ブレーキパッド',
+                'Parttype URL (category)': 'https://www.endless-sport.co.jp/products/brake_pad/index.html',
+                'Make': modelimport.text.strip(),
+                'Make URL': urlimportlist,
+                'Model': model,
+                'Model URL': '',
+                "Series": series,
+                'Year':  years,
+                'Engine cc':'' ,
+                'Type': '',
+                'PartNumber': partNumber.replace(' ', '\n'),
+            }
+            if years and partNumber:
+                data.append(endless)
+                print('Saving',endless['Make'], endless['Model'],endless['Type'], endless['Year'],  endless['Series'],  endless['PartNumber'])
+                with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fields)
+                    writer.writeheader()
+                    for item in data:
+                        writer.writerow(item)
+
+
+
+urllistimport1 = ['https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_ALFAROMEO.html' ,'https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_PEUGEOT.html' 
+,'https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_BMWMINI.html', 'https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_FIAT.html','https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_LOTUS.html','https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_RENAULT.html']
+
+for urlimportlist in urllistimport1:
+    r = requests.get(urlimportlist, headers=headers ,verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    make = soup.find('div', class_='maintitle_pc_box2').text.strip()
+
+    divmodel = soup.find_all('div', class_='slidebox2')
+    for div in divmodel:
+        modelbraek_line = div.text.strip().replace('＋ ', '') 
+                
+        iframesimport = div.find_next_sibling('div').find_all('iframe')
+        for iframeimport in iframesimport:
+            src = iframeimport['src']
+            iframeimport_content = requests.get(src).content
+            iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+            tables = iframeimport_soup.find_all('table')
+
+            for table in tables:
+                rows = table.find_all('tr')[3:]
+                for row in rows:
+                    removetext = ['test']
+                    if any(text in td.text.strip() for td in row for text in removetext):
+                        continue
+                    if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                        continue                   
+                    try:
+                        td_elementsyears = row.find_all('td')
+                        if len(td_elementsyears) == 15:
+                            years = td_elementsyears[3].text.strip()
+                        else:
+                            years = ''           
+                    except:
+                        years = ''
+
+                    try:
+                        td_elementsSeries = row.find_all('td')
+                        if len(td_elementsSeries) == 15:
+                            modelSeries = td_elementsSeries[4].text.strip()
+                        else:
+                            modelSeries = ''           
+                    except:
+                        modelSeries = ''
+
+                    partNumberFront = row.find_all('td')
+                    partNumberRear = row.find_all('td')[10:]
+                    if partNumberFront and partNumberRear:
+                        partNumber = partNumberFront[5].text.strip() +' '+ partNumberRear[0].text.strip()
+                    else:
+                        partNumber = ""
+                    
+                    endless = {
+                        'Parttype (category)': 'ブレーキパッド',
+                        'Parttype URL (category)': 'https://www.endless-sport.co.jp/products/products_index.html',
+                        'Make':make ,
+                        'Make URL': '',
+                        'Model': modelbraek_line,
+                        'Model URL': '',
+                        "Series": modelSeries,
+                        'Year':  years,
+                        'Engine cc':'' ,
+                        'Type': '',
+                        'PartNumber': partNumber.replace(' ', '\n'),
+                    }
+                    if years and  partNumber:
+                        data.append(endless)
+                        print('Saving', endless['Make URL'], endless['Make'], endless['Model'],endless['Type'], endless['Year'],  endless['Series'],  endless['PartNumber'])
+                        with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=fields)
+                            writer.writeheader()
+                            for item in data:
+                                writer.writerow(item)
+
+
+urllistimport1 = ['https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_BMW.html']
+
+for urlimportlist in urllistimport1:
+    r = requests.get(urlimportlist, headers=headers ,verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    make = soup.find('div', class_='maintitle_pc_box2').text.strip()
+
+iframesimport = soup.find_all('iframe')
+for iframeimport in iframesimport:
+    src = iframeimport['src']
+    iframeimport_content = requests.get(src).content
+    iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+    tablesimport = iframeimport_soup.find_all('table')     
+        
+    for tablemodelimport in tablesimport:
+        rowsmodelimport = tablemodelimport.find_all('tr')[2]
+        modelimport =  rowsmodelimport.find_all('td')[1]
+    for table in tablesimport:
+        rows = table.find_all('tr')[6:]
+        for row in rows:
+            removetext = ['フロント']
+            if any(text in td.text.strip() for td in row for text in removetext):
+                continue
+            if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                continue                   
+            try:
+                td_elementsyears = row.find_all('td')
+                if len(td_elementsyears) == 21:
+                    years = td_elementsyears[3].text.strip()
+                elif len(td_elementsyears) == 20:
+                    years = td_elementsyears[2].text.strip()
+                else:
+                    years = ''           
+            except:
+                years = ''
+
+            try:
+                td_elementsSeries = row.find_all('td')
+                if len(td_elementsSeries) == 21:
+                    modelSeries = td_elementsSeries[4].text.strip()
+                else:
+                    modelSeries = ''           
+            except:
+                modelSeries = ''
+
+            try:
+                td_elementsType = row.find_all('td')
+                if len(td_elementsType) == 21:
+                    modelType = td_elementsType[2].text.strip()
+                elif len(td_elementsType) == 20:
+                    modelType = td_elementsType[1].text.strip()
+                else:
+                    modelType = ''           
+            except:
+                modelType = ''
+
+            try:
+                td_elementspartNumberFront = row.find_all('td')
+                if len(td_elementspartNumberFront) == 21:
+                    modelpartNumberFront = td_elementspartNumberFront[5].text.strip()
+                elif len(td_elementspartNumberFront) == 20:
+                    modelpartNumberFront = td_elementspartNumberFront[4].text.strip()
+                else:
+                    modelpartNumberFront = ''           
+            except:
+                modelpartNumberFront = ''
+
+            try:
+                td_elementspartNumberRear = row.find_all('td')
+                if len(td_elementspartNumberRear) == 21:
+                    modelpartNumberRear = td_elementspartNumberRear[13].text.strip()
+                elif len(td_elementspartNumberRear) == 20:
+                    modelpartNumberRear = td_elementspartNumberRear[12].text.strip()
+                else:
+                    modelpartNumberRear = ''           
+            except:
+                modelpartNumberRear = ''
+
+            if modelpartNumberFront and modelpartNumberRear:
+                partNumber = modelpartNumberFront +' '+ modelpartNumberRear
+            else:
+                partNumber = ""
+            endless = {
+                'Parttype (category)': 'ブレーキパッド',
+                'Parttype URL (category)':'https://www.endless-sport.co.jp/products/brake_pad/index.html',
+                'Make':make,
+                'Make URL': urlimportlist,
+                'Model': '',
+                'Model URL': '',
+                "Series":modelSeries,
+                'Year':  years,
+                'Engine cc':'' ,
+                'Type': modelType,
+                'PartNumber': partNumber.replace(' ', '\n'),
+            }
+            if modelType and years:
+                data.append(endless)
+                print('Saving', endless['Parttype (category)'], endless['Make URL'], endless['Make'], endless['Model'], endless['Type'], endless['Year'],  endless['Series'],  endless['PartNumber'])
+                with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fields)
+                    writer.writeheader()
+                    for item in data:
+                        writer.writerow(item)
+
+
+urllistimport1 = ['https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_PORSCHE.html']
+
+for urlimportlist in urllistimport1:
+    r = requests.get(urlimportlist, headers=headers ,verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    make = soup.find('div', class_='maintitle_pc_box2').text.strip()
+
+iframesimport = soup.find_all('iframe')
+for iframeimport in iframesimport:
+    src = iframeimport['src']
+    iframeimport_content = requests.get(src).content
+    iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+    tablesimport = iframeimport_soup.find_all('table')     
+        
+    for tablemodelimport in tablesimport:
+        rowsmodelimport = tablemodelimport.find_all('tr')[2]
+        modelimport =  rowsmodelimport.find_all('td')[1]
+    for table in tablesimport:
+        rows = table.find_all('tr')[4:]
+        for row in rows:
+            removetext = ['フロント']
+            if any(text in td.text.strip() for td in row for text in removetext):
+                continue
+            if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                continue                   
+            try:
+                td_elementsyears = row.find_all('td')
+                if len(td_elementsyears) == 26:
+                    years = td_elementsyears[4].text.strip()
+                else:
+                    years = ''           
+            except:
+                years = ''
+
+            try:
+                td_elementsSeries = row.find_all('td')
+                if len(td_elementsSeries) == 26:
+                    modelSeries = td_elementsSeries[5].text.strip()
+                else:
+                    modelSeries = ''           
+            except:
+                modelSeries = ''
+
+            try:
+                td_elementsType = row.find_all('td')
+                if len(td_elementsType) == 26:
+                    modelType = td_elementsType[2].text.strip()
+                else:
+                    modelType = ''           
+            except:
+                modelType = ''
+
+            try:
+                td_elementspartNumberFront = row.find_all('td')
+                if len(td_elementspartNumberFront) == 26:
+                    modelpartNumberFront = td_elementspartNumberFront[6].text.strip()
+                else:
+                    modelpartNumberFront = ''           
+            except:
+                modelpartNumberFront = ''
+
+            try:
+                td_elementspartNumberRear = row.find_all('td')
+                if len(td_elementspartNumberRear) == 26:
+                    modelpartNumberRear = td_elementspartNumberRear[16].text.strip()
+                else:
+                    modelpartNumberRear = ''           
+            except:
+                modelpartNumberRear = ''
+
+            if modelpartNumberFront and modelpartNumberRear:
+                partNumber = modelpartNumberFront +' '+ modelpartNumberRear
+            else:
+                partNumber = ""
+
+            endless = {
+                'Parttype (category)': 'ブレーキパッド',
+                'Parttype URL (category)':'https://www.endless-sport.co.jp/products/brake_pad/index.html' ,
+                'Make':make,
+                'Make URL': urlimportlist,
+                'Model': '',
+                'Model URL': '',
+                "Series":modelSeries,
+                'Year':  years,
+                'Engine cc':'' ,
+                'Type': modelType,
+                'PartNumber': partNumber.replace(' ', '\n'),
+            }
+            if modelType and years:
+                data.append(endless)
+                print('Saving', endless['Parttype (category)'], endless['Make URL'], endless['Make'], endless['Model'], endless['Type'], endless['Year'],  endless['Series'],  endless['PartNumber'])
+                with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fields)
+                    writer.writeheader()
+                    for item in data:
+                        writer.writerow(item)
+
+
+urllistimport1 = ['https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_VOLVO.html','https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_VOLKSWAGEN.html']
+
+for urlimportlist in urllistimport1:
+    r = requests.get(urlimportlist, headers=headers ,verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    make = soup.find('div', class_='maintitle_pc_box2').text.strip()
+
+iframesimport = soup.find_all('iframe')
+for iframeimport in iframesimport:
+    src = iframeimport['src']
+    iframeimport_content = requests.get(src).content
+    iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+    tablesimport = iframeimport_soup.find_all('table')     
+        
+    for tablemodelimport in tablesimport:
+        rowsmodelimport = tablemodelimport.find_all('tr')[2]
+        modelimport =  rowsmodelimport.find_all('td')[1]
+    for table in tablesimport:
+        rows = table.find_all('tr')[4:]
+        for row in rows:
+            removetext = ['フロント']
+            if any(text in td.text.strip() for td in row for text in removetext):
+                continue
+            if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                continue                   
+            try:
+                td_elementsyears = row.find_all('td')
+                if len(td_elementsyears) == 16:
+                    years = td_elementsyears[4].text.strip()
+                else:
+                    years = ''           
+            except:
+                years = ''
+
+            try:
+                td_elementsSeries = row.find_all('td')
+                if len(td_elementsSeries) == 16:
+                    modelSeries = td_elementsSeries[5].text.strip()
+                else:
+                    modelSeries = ''           
+            except:
+                modelSeries = ''
+
+            try:
+                td_elementsType = row.find_all('td')
+                if len(td_elementsType) == 16:
+                    modelType = td_elementsType[2].text.strip()
+                else:
+                    modelType = ''           
+            except:
+                modelType = ''
+
+            try:
+                td_elementspartNumberFront = row.find_all('td')
+                if len(td_elementspartNumberFront) == 16:
+                    modelpartNumberFront = td_elementspartNumberFront[6].text.strip()
+                else:
+                    modelpartNumberFront = ''           
+            except:
+                modelpartNumberFront = ''
+
+            try:
+                td_elementspartNumberRear = row.find_all('td')
+                if len(td_elementspartNumberRear) == 16:
+                    modelpartNumberRear = td_elementspartNumberRear[11].text.strip()
+                else:
+                    modelpartNumberRear = ''           
+            except:
+                modelpartNumberRear = ''
+
+            if modelpartNumberFront and modelpartNumberRear:
+                partNumber = modelpartNumberFront +' '+ modelpartNumberRear
+            else:
+                partNumber = ""
+
+            endless = {
+                'Parttype (category)': 'ブレーキパッド',
+                'Parttype URL (category)':'https://www.endless-sport.co.jp/products/brake_pad/index.html',
+                'Make':make,
+                'Make URL': urlimportlist,
+                'Model': '',
+                'Model URL': '',
+                "Series":modelSeries,
+                'Year':  years,
+                'Engine cc':'' ,
+                'Type': modelType,
+                'PartNumber': partNumber.replace(' ', '\n'),
+            }
+            if  years and partNumber:
+                data.append(endless)
+                print('Saving', endless['Parttype (category)'], endless['Make URL'], endless['Make'], endless['Model'], endless['Type'], endless['Year'],  endless['Series'],  endless['PartNumber'])
+                with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fields)
+                    writer.writeheader()
+                    for item in data:
+                        writer.writerow(item)
+
+
+urllistimport1 = ['https://www.endless-sport.co.jp/products/brake_pad/BrakePad_Carlist/import/BrakePad_FERRARI.html']
+
+for urlimportlist in urllistimport1:
+    r = requests.get(urlimportlist, headers=headers ,verify=False)
+    soup = BeautifulSoup(r.content, 'lxml')
+
+    make = soup.find('div', class_='maintitle_pc_box2').text.strip()
+
+iframesimport = soup.find_all('iframe')
+for iframeimport in iframesimport:
+    src = iframeimport['src']
+    iframeimport_content = requests.get(src).content
+    iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+    tablesimport = iframeimport_soup.find_all('table')     
+        
+    for tablemodelimport in tablesimport:
+        rowsmodelimport = tablemodelimport.find_all('tr')[2]
+        modelimport =  rowsmodelimport.find_all('td')[1]
+    for table in tablesimport:
+        rows = table.find_all('tr')[4:]
+        for row in rows:
+            removetext = ['フロント']
+            if any(text in td.text.strip() for td in row for text in removetext):
+                continue
+            if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+                continue                   
+            try:
+                td_elementsmodel = row.find_all('td')
+                if len(td_elementsmodel) == 8:
+                    model = td_elementsmodel[1].text.strip()
+                else:
+                    model = ''           
+            except:
+                years = ''
+            try:
+                td_elementsyears = row.find_all('td')
+                if len(td_elementsyears) == 8:
+                    years = td_elementsyears[4].text.strip()
+                else:
+                    years = ''           
+            except:
+                years = ''
+
+            try:
+                td_elementsSeries = row.find_all('td')
+                if len(td_elementsSeries) == 8:
+                    modelSeries = td_elementsSeries[5].text.strip()
+                else:
+                    modelSeries = ''           
+            except:
+                modelSeries = ''
+
+            try:
+                td_elementsType = row.find_all('td')
+                if len(td_elementsType) == 8:
+                    modelType = td_elementsType[2].text.strip()
+                else:
+                    modelType = ''           
+            except:
+                modelType = ''
+
+
+            partNumberFront = row.find_all('td')
+            partNumberRear = row.find_all('td')[7:]
+            if partNumberFront and partNumberRear:
+                partNumber = partNumberFront[6].text.strip() +' '+ partNumberRear[0].text.strip()
+            else:
+                partNumber = ""
+            endless = {
+                'Parttype (category)': 'ブレーキパッド',
+                'Parttype URL (category)':'https://www.endless-sport.co.jp/products/products_index.html' ,
+                'Make':make,
+                'Make URL': urlimportlist,
+                'Model': model,
+                'Model URL': '',
+                "Series":modelSeries,
+                'Year':  years,
+                'Engine cc':'' ,
+                'Type': modelType,
+                'PartNumber': partNumber.replace(' ', '\n'),
+            }
+            if modelType and  partNumber:
+                data.append(endless)
+                print('Saving', endless['Parttype (category)'], endless['Make URL'], endless['Make'], endless['Model'], endless['Type'], endless['Year'],  endless['Series'],  endless['PartNumber'])
+                with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fields)
+                    writer.writeheader()
+                    for item in data:
+                        writer.writerow(item)
+
+# time.sleep(.1)                
+# #product imported 
+# importedCar = brakepad_search_whole.find_all('div', id='right_menu_box')[1]
+# for linkcarsimported in importedCar.find_all('a', href=True):
+#     urlimported = linkcarsimported['href'].replace('https://', 'https://www.')
+#     if urlimported not in processed_urls:
+#         listImportedCar.append(urlimported)
+#         processed_urls.add(urlimported)
+
+# for pageCarListImport in listImportedCar:
+#     time.sleep(.1)
+#     r = requests.get(pageCarListImport, headers=headers, verify=False)
+#     soup = BeautifulSoup(r.content, 'lxml')    
+
+#     # testdiv = soup.find('div', id='maintitle_pc')
+#     # print(testdiv)
+
+#     cautionContents = soup.find('div', {'class': 'caution_contents'}) or soup.find('div', {'id': 'caution_contents'})
+#     if cautionContents:
+#         caution_links = cautionContents.find_all('a')
+#         category = caution_links[1]
+#         parttype_category_url = category['href']
+#         parttype_category = category.text.strip()
+
+
+#     iframesimport = soup.find_all('iframe')
+#     for iframeimport in iframesimport:
+#         src = iframeimport['src']
+#         iframeimport_content = requests.get(src).content
+#         iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
+#         tablesimport = iframeimport_soup.find_all('table')
+#         # print(tables)
+#         for tableMake in tablesimport:
+#             rowsMake = tableMake.find_all('tr')[1]
+#             makeimport =  rowsMake.find_all('td')[1]
+        
+#         for tablemodelimport in tablesimport:
+#             rowsmodelimport = tablemodelimport.find_all('tr')[2]
+#             modelimport =  rowsmodelimport.find_all('td')[1]
             
 
-        for table in tablesimport:
-            rows = table.find_all('tr')[5:]
-            for row in rows:
-                # tambahkan kondisi untuk memeriksa apakah elemen tr memiliki atribut style yang mengatur tinggi
-                if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
-                    continue  # lewati jika ada atribut style dengan ketinggian yang ditentukan
-                year = row.find_all('td')
-                engine = row.find_all('td')
-                type_ = row.find_all('td')
-                PartNumberFront = row.find_all('td')
-                PartNumberRear = row.find_all('td')[10:]
-                if PartNumberFront and PartNumberRear:
-                    PartNumber = PartNumberFront[5].text.strip() +' '+ PartNumberRear[0].text.strip()
-                else:
-                    PartNumber = ""
+#         for table in tablesimport:
+#             rows = table.find_all('tr')[5:]
+#             for row in rows:
+#                 # tambahkan kondisi untuk memeriksa apakah elemen tr memiliki atribut style yang mengatur tinggi
+#                 if row.has_attr('style') and 'height: 149px' in row['style'] and 'px' in row['style']:
+#                     continue  # lewati jika ada atribut style dengan ketinggian yang ditentukan
+#                 year = row.find_all('td')
+#                 engine = row.find_all('td')
+#                 type_ = row.find_all('td')
+#                 PartNumberFront = row.find_all('td')
+#                 PartNumberRear = row.find_all('td')[10:]
+#                 if PartNumberFront and PartNumberRear:
+#                     PartNumber = PartNumberFront[5].text.strip() +' '+ PartNumberRear[0].text.strip()
+#                 else:
+#                     PartNumber = ""
                 
-                if year and engine and type_ and PartNumber:
-                    endless = {
-                        'Parttype (category)': parttype_category,
-                        'Parttype URL (category)': parttype_category_url,
-                        'Make': makeimport.text.strip(),
-                        'Make URL': pageBrakepads,
-                        'Model': modelimport.text.strip(),
-                        'Model URL': pageCarListImport,
-                        "Series": ' ',
-                        'Year': year[3].text.strip().replace('～', ' ～ '),
-                        'Engine cc': ' ',
-                        'Type': type_[4].text.strip(),
-                        'PartNumber': PartNumber.replace(' ', '\n'),
-                    }
-                    data.append(endless)
-                    print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])                   
-                    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-                        writer = csv.DictWriter(csvfile, fieldnames=fields)
-                        writer.writeheader()
-                        for item in data:
-                            writer.writerow(item)
+#                 endless = {
+#                     'Parttype (category)': parttype_category,
+#                     'Parttype URL (category)': parttype_category_url,
+#                     'Make': makeimport.text.strip(),
+#                     'Make URL': pageBrakepads,
+#                     'Model': modelimport.text.strip(),
+#                     'Model URL': pageCarListImport,
+#                     "Series": ' ',
+#                     'Year': year[3].text.strip().replace('～', ' ～ '),
+#                     'Engine cc': ' ',
+#                     'Type': type_[4].text.strip(),
+#                     'PartNumber': PartNumber.replace(' ', '\n'),
+#                 }
+#                 if year and PartNumber:
+#                     data.append(endless)
+#                     print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])                   
+#                     with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+#                         writer = csv.DictWriter(csvfile, fieldnames=fields)
+#                         writer.writeheader()
+#                         for item in data:
+#                             writer.writerow(item)
 
 
 
@@ -309,7 +858,7 @@ for pagelistbrakerotor in listbrakerotorlinks:
     divmodel = soup.find_all('div', class_='slidebox2')[1:]
         
     for div in divmodel:
-        modelbrakerotor = div.text.strip() 
+        modelbrakerotor = div.text.strip().replace('＋ ', '')  
             
         iframesimport = div.find_next_sibling('div').find_all('iframe')
         for iframeimport in iframesimport:
@@ -359,25 +908,25 @@ for pagelistbrakerotor in listbrakerotorlinks:
                    
                     endless = {
                         'Parttype (category)': 'ブレーキライン',
-                        'Parttype URL (category)': '',
+                        'Parttype URL (category)': brake_rotor,
                         'Make': makebrakerotor,
-                        'Make URL': '',
+                        'Make URL': pagelistbrakerotor,
                         'Model':  modelbrakerotor,
-                        'Model URL': '',
+                        'Model URL': pagelistbrakerotor,
                         'Year':  '',
                         'Series': model,
                         'Engine cc': '',
                         'Type': '',
                         'PartNumber':partNumberbrakerotor,
                     }
-                    data.append(endless)
-                    print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
-                    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-                        writer = csv.DictWriter(csvfile, fieldnames=fields)
-                        writer.writeheader()
-                        for item in data:
-                            writer.writerow(item)
-
+                    if model and partNumberbrakerotor:
+                        data.append(endless)
+                        print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
+                        with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=fields)
+                            writer.writeheader()
+                            for item in data:
+                                writer.writerow(item)
 
 
 brake_line = baseurl + '/products/brake_line/index.html'
@@ -409,12 +958,6 @@ for listbrake_linelinks in linknameCarsbrake_line:
             iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
             tables = iframeimport_soup.find_all('table')
             
-            year = ''       
-            model =''
-            typebraek_line = ''
-            partNumberbraek_line = ''
-            series = ''
-            
             for table in tables:
                 rows = table.find_all('tr')[3:]
                 for row in rows:
@@ -441,22 +984,20 @@ for listbrake_linelinks in linknameCarsbrake_line:
                     except:
                         typebraek_line = ' '
                     
-                    # print(modelbraek_line, typebraek_line, partNumberbraek_line)
-
+                    endless = {
+                        'Parttype (category)': 'ブレーキライン',
+                        'Parttype URL (category)': brake_line,
+                        'Make': makebraek_line,
+                        'Make URL': listbrake_linelinks,
+                        'Model':  modelbraek_line,
+                        'Model URL': listbrake_linelinks,
+                        'Year':  '',
+                        'Series': '',
+                        'Engine cc': '',
+                        'Type': typebraek_line,
+                        'PartNumber':partNumberbraek_line,
+                    }
                     if typebraek_line and partNumberbraek_line:
-                        endless = {
-                            'Parttype (category)': 'ブレーキライン',
-                            'Parttype URL (category)': '',
-                            'Make': makebraek_line,
-                            'Make URL': listbrake_linelinks,
-                            'Model':  modelbraek_line,
-                            'Model URL': '',
-                            'Year':  '',
-                            'Series': '',
-                            'Engine cc': '',
-                            'Type': typebraek_line,
-                            'PartNumber':partNumberbraek_line,
-                        }
                         data.append(endless)
                         print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
                         with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
@@ -464,11 +1005,6 @@ for listbrake_linelinks in linknameCarsbrake_line:
                             writer.writeheader()
                             for item in data:
                                 writer.writerow(item)
-
-        
-
-
-
 
 
 brake_line = baseurl + '/products/brake_line/index.html'
@@ -499,12 +1035,6 @@ for listbrake_linelinks in linknameCarsbrake_line:
             iframeimport_content = requests.get(src).content
             iframeimport_soup = BeautifulSoup(iframeimport_content, 'html.parser')
             tables = iframeimport_soup.find_all('table')
-            
-            year = ''       
-            model =''
-            typebraek_line = ''
-            partNumberbraek_line = ''
-            series = ''
                     
             for table in tables:
                 rows = table.find_all('tr')[4:]
@@ -568,7 +1098,7 @@ for listbrake_linelinks in linknameCarsbrake_line:
                         'Make': modelbraek_line,
                         'Make URL': listbrake_linelinks,
                         'Model':  model,
-                        'Model URL': '',
+                        'Model URL': listbrake_linelinks,
                         'Year':  year,
                         'Series': series,
                         'Engine cc': '',
@@ -576,14 +1106,13 @@ for listbrake_linelinks in linknameCarsbrake_line:
                         'PartNumber':partNumberbraek_line,
                     }
                     data.append(endless)
-                    print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
-                    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
-                        writer = csv.DictWriter(csvfile, fieldnames=fields)
-                        writer.writeheader()
-                        for item in data:
-                            writer.writerow(item)
-
-
+                    if  typebraek_line and partNumberbraek_line and year and series:
+                        print('Saving', endless['Make'], endless['Make URL'], endless['Model'],  endless['PartNumber'])
+                        with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=fields)
+                            writer.writeheader()
+                            for item in data:
+                                writer.writerow(item)
 
 
 suspensionUlr = baseurl + '/products/suspension/index_functionxplus.html'
