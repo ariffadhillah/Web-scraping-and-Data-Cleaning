@@ -314,12 +314,22 @@ for make_name_url in produclinks:
             for typeUrl in ListTypeUrl.find_all('a', class_='mt-auto', href=True):
                 texttypeUrl = typeUrl.text.strip()
                 linktypeUrl.append((typeUrl['href'], texttypeUrl))
-
-
+                
+            result = []
+            result.append({
+                "make": make_name,
+                "model": model_name,
+                "type": texttypeUrl
+            })
+            list_of_Vehicle_Compatibility = json.dumps(result)
+            
         for typeUrl, texttypeUrl in linktypeUrl:
             page_num = 1
             while True:
                 page_url = typeUrl + f'?p={page_num}'
+
+                        
+                
 
                 r = requests.get(page_url, headers=headers)
                 soup = BeautifulSoup(r.content, 'lxml')
@@ -336,10 +346,81 @@ for make_name_url in produclinks:
                     
                         r = requests.get(link, headers=headers)
                         soup = BeautifulSoup(r.content, 'lxml')
+                                                
+                        try:
+                            productTitle = soup.find('h1', class_='page-title').text.strip()
+                        except:
+                            productTitle = ''
 
-                        productTitle = soup.find('h1', class_='page-title').text.strip()
-                        print(productTitle)
+                        try:
+                            productSubtitle = soup.find('td', {'data-th':'Subtitle'}, class_='col data' ).text.strip()
+                        except:
+                            productSubtitle = ''
+
+                        try:
+                            productinfomain = soup.find('td', {'data-th':'Subtitle'}, class_='col data' ).text.strip()
+                            discription_txt = soup.find('div', class_='product attribute overview').text.strip()
+                            discription_ul = soup.find('div', class_='hardraceProductPromo').text.strip()
+                            discription = productinfomain + 'br_row' + discription_txt + 'br_row' + discription_ul  
+                        except:
+                            discription = ''
+
+                        try:
+                            partNumber = soup.find('div', class_='product attribute sku').text.strip().replace('SKU', '')
+                        except:
+                            partNumber = ''
+
+                        try:
+                            price_wrapper = soup.find('span', {'class': 'price-wrapper price-including-tax'})
+                            price = price_wrapper.find('span', {'class': 'price'}).text
+                        except:
+                            price = ''
+
+                        try:
+                            imgproductmedia = soup.find('div', {'class': 'gallery-placeholder _block-content-loading'})
+                            image = imgproductmedia.find('img', {'class': 'gallery-placeholder__image'})
+                            image_url = image['src']
+                        except:
+                            image_url = ''
+
+                        try:
+                            others = soup.find('div', {'class': 'product attribute description'}).text.strip()
+                        except:
+                            others = ''
+
+                        # print(productTitle, list_of_Vehicle_Compatibility.replace('[{', '{').replace('}]', '}'))
+
+
+
+                        hardrace = {
+                            'Category (Parent)': 'Home ' + ' Applications',
+                            'Category URL (Parent)': baseurl,
+                            'Category - Leaf (Child 1)': 'Home ' + ' Applications ' + make_name,
+                            'Category URL - Leaf (Child 1)': make_name_url,
+                            'Product URL': link,
+                            'PartNumber': partNumber,
+                            'Product Title': productTitle, 
+                            'Product Subtitle': productSubtitle,
+                            'Product Description': discription.replace('br_row', '\n'),
+                            'Image URLs': image_url,
+                            'Price': price,
+                            'List of Vehicle Compatibility': list_of_Vehicle_Compatibility.replace('[{', '{').replace('}]', '}'),
+                            'Brand': 'hardrace',
+                            'Others': others,
+                        }
+                        # if partNumber:
+                        data.append(hardrace)
+                        print('Saving', hardrace['Category (Parent)'],hardrace['Category URL (Parent)'], hardrace['Category - Leaf (Child 1)'], hardrace['Category URL - Leaf (Child 1)'], hardrace['Product URL'], hardrace['PartNumber'], hardrace['Product Title'], hardrace['Product Subtitle'], hardrace['Product Description'], hardrace['Image URLs'], hardrace['Price'], hardrace['List of Vehicle Compatibility'], hardrace['Brand'], hardrace['Others'])
+
                 page_num += 1
+        
+        result = []
+        result.append({
+            "make": make_name,
+            "model": model_name,
+            "type": ''
+        })
+        list_of_Vehicle_Compatibility = json.dumps(result)
 
         product_items = soup.find_all('strong', class_='product-item-name')
         if not product_items:
@@ -352,5 +433,68 @@ for make_name_url in produclinks:
                 r = requests.get(link, headers=headers)
                 soup = BeautifulSoup(r.content, 'lxml')
 
-                productTitle = soup.find('h1', class_='page-title').text.strip()
-                print(productTitle)
+
+                try:
+                    productTitle = soup.find('h1', class_='page-title').text.strip()
+                except:
+                    productTitle = ''
+                
+                try:
+                    productSubtitle = soup.find('td', {'data-th':'Subtitle'}, class_='col data' ).text.strip()
+                except:
+                    productSubtitle = ''
+
+                try:
+                    productinfomain = soup.find('td', {'data-th':'Subtitle'}, class_='col data' ).text.strip()
+                    discription_txt = soup.find('div', class_='product attribute overview').text.strip()
+                    discription_ul = soup.find('div', class_='hardraceProductPromo').text.strip()
+                    discription = productinfomain + 'br_row' + discription_txt + 'br_row' + discription_ul  
+                except:
+                    discription = ''
+
+                try:
+                    partNumber = soup.find('div', class_='product attribute sku').text.strip().replace('SKU', '')
+                except:
+                    partNumber = ''
+
+                try:
+                    price_wrapper = soup.find('span', {'class': 'price-wrapper price-including-tax'})
+                    price = price_wrapper.find('span', {'class': 'price'}).text
+                except:
+                    price = ''
+
+                try:
+                    imgproductmedia = soup.find('div', {'class': 'gallery-placeholder _block-content-loading'})
+                    image = imgproductmedia.find('img', {'class': 'gallery-placeholder__image'})
+                    image_url = image['src']
+                except:
+                    image_url = ''
+
+                try:
+                    others = soup.find('div', {'class': 'product attribute description'}).text.strip()
+                except:
+                    others = ''
+                
+                # print(productTitle, list_of_Vehicle_Compatibility.replace('[{', '{').replace('}]', '}'))
+
+
+                hardrace = {
+                    'Category (Parent)': 'Home ' + ' Applications',
+                    'Category URL (Parent)': baseurl,
+                    'Category - Leaf (Child 1)': 'Home ' + ' Applications ' + make_name,
+                    'Category URL - Leaf (Child 1)': make_name_url,
+                    'Product URL': link,
+                    'PartNumber': partNumber,
+                    'Product Title': productTitle, 
+                    'Product Subtitle': productSubtitle,
+                    'Product Description': discription.replace('br_row', '\n'),
+                    'Image URLs': image_url,
+                    'Price': price,
+                    'List of Vehicle Compatibility': list_of_Vehicle_Compatibility.replace('[{', '{').replace('}]', '}'),
+                    'Brand': 'hardrace',
+                    'Others': others,
+                }
+                
+                # if partNumber:
+                data.append(hardrace)
+                print('Saving', hardrace['Category (Parent)'],hardrace['Category URL (Parent)'], hardrace['Category - Leaf (Child 1)'], hardrace['Category URL - Leaf (Child 1)'], hardrace['Product URL'], hardrace['PartNumber'], hardrace['Product Title'], hardrace['Product Subtitle'], hardrace['Product Description'], hardrace['Image URLs'], hardrace['Price'], hardrace['List of Vehicle Compatibility'], hardrace['Brand'], hardrace['Others'])
