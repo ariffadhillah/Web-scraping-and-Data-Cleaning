@@ -356,7 +356,7 @@ for iframeimport in iframesimport:
                 'Make':make,
                 'Make URL': urlimportlist,
                 'Model': '',
-                'Model URL': '',
+                'Model URL': urlimportlist,
                 "Series":modelSeries,
                 'Year':  years,
                 'Engine cc':'' ,
