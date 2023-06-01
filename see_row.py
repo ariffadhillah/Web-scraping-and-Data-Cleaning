@@ -2,7 +2,7 @@ import csv
 
 # Membuka file CSV dengan encoding utf-8
 csv.field_size_limit(1000000000)
-with open('Data_Cleaning/data/New-Data/automotivesuperstore_product_file.csv', 'r', encoding='utf-8') as csvfile:
+with open('', 'r', encoding='utf-8') as csvfile:
     # Membaca file CSV sebagai dictionary
     reader = csv.DictReader(csvfile)
 
@@ -13,3 +13,5 @@ with open('Data_Cleaning/data/New-Data/automotivesuperstore_product_file.csv', '
             for key, value in row.items():
                 print(f"{key}: {value}")
             break
+
+

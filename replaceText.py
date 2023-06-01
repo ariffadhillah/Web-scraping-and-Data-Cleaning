@@ -5,7 +5,7 @@ import json
 data = pd.read_csv('')
 
 # mengubah nilai "make" menjadi "name" dalam kolom "RawVehicleProperties"
-data['VehicleRawProperties'] = data['VehicleRawProperties'].str.replace('"others": "-   ', '"engine":"')
+data['VehicleRawProperties'] = data['VehicleRawProperties'].str.replace('"model"', '"Model"')
 
 # Menyimpan data kembali ke dalam file CSV
 data.to_csv('', index=False)

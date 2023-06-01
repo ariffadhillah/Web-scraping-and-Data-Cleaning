@@ -11,7 +11,7 @@ with open('', 'r') as file:
 
 # Membaca file automotivesuperstore_draft_vehicle_to_parts_file.csv dan mencocokkan dengan vehicle_data
 new_rows = []
-with open('', 'r') as file:
+with open('Data_Cleaning/Hardrace_draft_vehicle_to_parts_file.csv', 'r') as file:
     reader = csv.DictReader(file)
     header = reader.fieldnames
 
@@ -22,7 +22,7 @@ with open('', 'r') as file:
         new_rows.append(row)
 
 # Menyimpan hasil ke dalam file automotivesuperstore_draft_vehicle_to_parts_file_sama_id.csv
-with open('', 'w', newline='') as file:
+with open('Data_Cleaning/Hardrace_draft_vehicle_to_parts_file.csv', 'w', newline='') as file:
     writer = csv.DictWriter(file, fieldnames=header)
     writer.writeheader()
     writer.writerows(new_rows)

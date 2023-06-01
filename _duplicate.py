@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Membaca file CSV
-df = pd.read_csv('Data_Cleaning/data/New-Data/automotivesuperstore_draft_vehicle_file.csv')
+df = pd.read_csv('')
 
 # Menemukan baris-baris dengan data duplikat pada kolom "RawVehicleProperties"
 duplicate_rows = df[df.duplicated(subset='RawVehicleProperties', keep=False)]
@@ -29,10 +29,10 @@ print("duplicate:", duplicate_count)
 # import pandas as pd
 
 # # Membaca file CSV
-# df = pd.read_csv('Data_Cleaning/data/New-Data/automotivesuperstore_draft_vehicle_file.csv')
+# df = pd.read_csv('')
 
 # # Menghapus baris-baris duplikat berdasarkan kolom "RawVehicleProperties"
 # df.drop_duplicates(subset='RawVehicleProperties', inplace=True)
 
 # # Menyimpan DataFrame yang telah diubah ke dalam file CSV
-# df.to_csv('Data_Cleaning/data/New-Data/automotivesuperstore_draft_vehicle_file.csv', index=False)
+# df.to_csv('', index=False)
