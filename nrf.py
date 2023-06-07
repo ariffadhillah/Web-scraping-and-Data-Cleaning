@@ -147,7 +147,7 @@ for category_URL_Leaf_Child_1 in submenuTitle:
 
 
             webshop = {
-                'Category (Parent)': 'Home   ' +  category_URL_Leaf_Child_1.split("/")[-3].replace('-', ' ').title() + '   ' +  category_URL_Leaf_Child_1.split("/")[-2].replace('-', ' ').title(),
+                'Category (Parent)': 'Home   ' +  product_URL.split("/")[-4].replace('-', ' ').title() + '   ' +  product_URL.split("/")[-3].replace('-', ' ').title(),
                 'Category URL (Parent)': category_URL_Parent,
                 'Category - Leaf (Child 1)':category_Leaf_Child_1,
                 'Category URL - Leaf (Child 1)': category_URL_Leaf_Child_1,
